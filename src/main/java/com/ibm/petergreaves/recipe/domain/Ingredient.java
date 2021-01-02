@@ -4,7 +4,7 @@ import javax.persistence.*;
 import java.math.BigDecimal;
 
 @Entity
-public class Ingredient {
+public class Ingredient implements Comparable<Ingredient>{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -17,6 +17,15 @@ public class Ingredient {
 
     @OneToOne(fetch = FetchType.EAGER)
     private UnitOfMeasure oum;
+
+
+    public Ingredient(){}
+
+    public Ingredient(String description, BigDecimal quantity, UnitOfMeasure oum) {
+        this.description = description;
+        this.quantity = quantity;
+        this.oum = oum;
+    }
 
     public Long getId() {
         return id;
@@ -56,5 +65,20 @@ public class Ingredient {
 
     public void setOum(UnitOfMeasure oum) {
         this.oum = oum;
+    }
+
+
+    @Override
+    public String toString() {
+        return "Ingredient{" +
+                "description='" + description + '\'' +
+                ", quantity=" + quantity +
+                ", oum=" + oum +
+                '}';
+    }
+
+    @Override
+    public int compareTo(Ingredient o) {
+        return o.getDescription().compareTo(this.getDescription());
     }
 }

@@ -5,7 +5,32 @@
     <title>Recipe home</title>
 </head>
 <body>
-<h1 th:text="'Index page'">Home page</h1>
+<h1 th:text="'My recipes!'">My recipes!</h1>
 
+<!--/*@thymesVar id="recipe" type="com.ibm.petergreaves.recipe.domain.Recipe"*/-->
+<!--/*@thymesVar id="ingredient" type="com.ibm.petergreaves.recipe.domain.Ingredient"*/-->
+<h2 th:text="'List of recipes'">Index page</h2>
+
+
+<table id="owners" class="table table-striped" border="1">
+    <thead>
+    <tr>
+        <th style="width: 100px;">Title</th>
+        <th style="...">Ingredients</th>
+        <th style="...">Notes</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="recipe : ${recipes}">
+        <td th:text="${recipe.title} + ' from ' +${recipe.url}">Title</td>
+        <td><p th:each="ingredient: ${recipe.ingredients}" th:text="${ingredient.description} +','+ ${#numbers.formatDecimal(ingredient.quantity,1,2)} + ' ('
++ ${ingredient.oum.description} +')'">ingredient  info</p>
+
+        </td>
+        <td th:text="${recipe.notes.recipeNotes}">Notes</td>
+
+    </tr>
+    </tbody>
+</table>
 </body>
 </html>
