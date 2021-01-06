@@ -1,17 +1,15 @@
 package com.ibm.petergreaves.recipe.services;
 
-import com.ibm.petergreaves.recipe.domain.*;
-import com.ibm.petergreaves.recipe.repositories.CategoryRepository;
+import com.ibm.petergreaves.recipe.domain.Recipe;
 import com.ibm.petergreaves.recipe.repositories.RecipeRepository;
-import com.ibm.petergreaves.recipe.repositories.UnitOfMeasureRepository;
-import com.ibm.petergreaves.recipe.utils.IngredientsBuilder;
-import com.ibm.petergreaves.recipe.utils.RecipeBuilder;
-import net.bytebuddy.description.type.TypeDescription;
+
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
-import java.util.*;
+import java.util.HashSet;
+import java.util.Set;
 
+@Slf4j
 @Service
 public class RecipeServiceImpl implements RecipeService{
 
@@ -24,8 +22,8 @@ public class RecipeServiceImpl implements RecipeService{
 
     @Override
     public Set<Recipe> getRecipes() {
-
-        Set<Recipe> recipes = new TreeSet<>();
+        log.debug("Getting recipes");
+        Set<Recipe> recipes = new HashSet<>();
         recipeRepository.findAll().iterator().forEachRemaining(recipes::add);
 
         return recipes;

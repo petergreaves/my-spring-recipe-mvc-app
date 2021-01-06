@@ -4,8 +4,7 @@ import com.ibm.petergreaves.recipe.domain.*;
 import com.ibm.petergreaves.recipe.repositories.CategoryRepository;
 import com.ibm.petergreaves.recipe.repositories.RecipeRepository;
 import com.ibm.petergreaves.recipe.repositories.UnitOfMeasureRepository;
-import com.ibm.petergreaves.recipe.utils.RecipeBuilder;
-import org.springframework.boot.CommandLineRunner;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
@@ -13,6 +12,7 @@ import org.springframework.stereotype.Component;
 import java.math.BigDecimal;
 import java.util.*;
 
+@Slf4j
 @Component
 public class RecipeBootstrap implements ApplicationListener<ContextRefreshedEvent> {
 
@@ -79,12 +79,28 @@ private RecipeRepository recipeRepository;
         Notes guacNotes = new Notes();
         guacNotes.setRecipeNotes("here are the notes for the guacamole recipe\n\nLovely!!");
 
+        Ingredient sugar = Ingredient.builder()
+                .description("Sugar")
+                .oum(cupUom.get())
+                .quantity(new BigDecimal(0.5))
+                .build();
+        Ingredient eggs = Ingredient.builder()
+                .description("Eggs")
+                .quantity(new BigDecimal(2))
+                .oum(cupUom.get())
+                .build();
+        Ingredient flour = Ingredient.builder()
+                .description("Flour")
+                .quantity(new BigDecimal(1))
+                .oum(cupUom.get())
+                .build();
+        Ingredient avocado = Ingredient.builder()
+                .description("Avocado")
+                .quantity(new BigDecimal(1))
+                .oum(eachUom.get())
+                .build();
 
-        Ingredient eggs = new Ingredient("Eggs",new BigDecimal(2), eachUom.get());
-        Ingredient flour = new Ingredient("Flour",new BigDecimal(0.5), cupUom.get());
-        Ingredient avocado = new Ingredient("Ripe avocado",new BigDecimal(1), eachUom.get());
-
-
+        log.debug("Created recipes...");
 
         guacamole.setTitle("Best ever guacamole");
         guacamole.setCookTime(60);
@@ -96,8 +112,7 @@ private RecipeRepository recipeRepository;
         guacamole.addIngredient(flour);
         guacamole.addIngredient(eggs);
         guacamole.addIngredient(avocado);
-
-      //  System.out.println(guacamole.getIngredients());
+        guacamole.addIngredient(sugar);
 
         guacamole.setServings(4);
         guacamole.setDescription("this is the best ever guacamole");
@@ -105,6 +120,7 @@ private RecipeRepository recipeRepository;
         guacamole.getCategories().add(catMexican.get());
 
         retval.add(guacamole);
+        log.debug("Created recipe : "+ guacamole.getTitle());
         return retval;
     }
 
