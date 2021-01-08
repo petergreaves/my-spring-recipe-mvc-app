@@ -74,10 +74,10 @@ private RecipeRepository recipeRepository;
 
         List<Recipe> retval = new ArrayList<>();
 
-        Recipe guacamole = new Recipe();
+      //  Recipe guacamole = new Recipe();
 
         Notes guacNotes = new Notes();
-        guacNotes.setRecipeNotes("here are the notes for the guacamole recipe\n\nLovely!!");
+        guacNotes.setRecipeNotes("Here are the notes for the guacamole recipe\n\nLovely!!");
 
         Ingredient sugar = Ingredient.builder()
                 .description("Sugar")
@@ -99,27 +99,72 @@ private RecipeRepository recipeRepository;
                 .quantity(new BigDecimal(1))
                 .oum(eachUom.get())
                 .build();
+        Ingredient mozzarella = Ingredient.builder()
+                .description("Mozzarella")
+                .quantity(new BigDecimal(4))
+                .oum(ounceUom.get())
+                .build();
+        Ingredient tomatoSauce = Ingredient.builder()
+                .description("Tomato Sauce")
+                .quantity(new BigDecimal(1))
+                .oum(cupUom.get())
+                .build();
+
+
+
+        Set<Ingredient> guacIngredients = new HashSet<>();
+        guacIngredients.add(avocado);
+        guacIngredients.add(eggs);
+        guacIngredients.add(sugar);
+        guacIngredients.add(flour);
+
+        Set<Category> guacCats = new HashSet<>();
+        guacCats.add(catMexican.get());
+        guacCats.add(catAmerican.get());
 
         log.debug("Created recipes...");
 
-        guacamole.setTitle("Best ever guacamole");
-        guacamole.setCookTime(60);
-        guacamole.setPrepTime(25);
-        guacamole.setDifficulty(Difficulty.MODERATE);
-        guacamole.setNotes(guacNotes);
-        guacamole.setUrl("http://an.address");
-        guacamole.setSource("http://src.address'");
-        guacamole.addIngredient(flour);
-        guacamole.addIngredient(eggs);
-        guacamole.addIngredient(avocado);
-        guacamole.addIngredient(sugar);
-
-        guacamole.setServings(4);
-        guacamole.setDescription("this is the best ever guacamole");
-        guacamole.getCategories().add(catAmerican.get());
-        guacamole.getCategories().add(catMexican.get());
+        Recipe guacamole= Recipe.builder()
+                .title("Best ever guacamole")
+                .cookTime(60)
+                .prepTime(25)
+                .difficulty(Difficulty.MODERATE)
+                .notes(guacNotes)
+                .url("http://an.address")
+                .source("http://src.address")
+                .ingredients(guacIngredients)
+                .servings(4)
+                .description("Best ever guacamole")
+                .categories(guacCats)
+                .build();
 
         retval.add(guacamole);
+
+        HashSet<Category> pizzaCats = new HashSet<>();
+        catAmerican.ifPresent(pizzaCats::add);
+
+        Set<Ingredient> pizzaIngredients = new HashSet<>();
+        pizzaIngredients.add(mozzarella);
+        pizzaIngredients.add(flour);
+        pizzaIngredients.add(tomatoSauce);
+
+
+        Recipe pizza= Recipe.builder()
+                .title("Pizza")
+                .cookTime(30)
+                .prepTime(15)
+                .difficulty(Difficulty.EASY)
+                .notes(guacNotes)
+                .url("http://an.address")
+                .source("http://src.address")
+                .ingredients(pizzaIngredients)
+                .servings(4)
+                .description("Pizza")
+                .categories(pizzaCats)
+                .build();
+
+        retval.add(pizza);
+
         log.debug("Created recipe : "+ guacamole.getTitle());
         return retval;
     }

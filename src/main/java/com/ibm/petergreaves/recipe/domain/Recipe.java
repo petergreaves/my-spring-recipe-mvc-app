@@ -1,15 +1,17 @@
 package com.ibm.petergreaves.recipe.domain;
 
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.*;
 
 import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
 
 @Data
-@Entity
+@NoArgsConstructor
+@AllArgsConstructor
 @EqualsAndHashCode(exclude = {"notes"})
+@Entity
+@Builder
 public class Recipe {
 
     @Id
