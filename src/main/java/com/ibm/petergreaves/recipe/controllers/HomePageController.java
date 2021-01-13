@@ -23,7 +23,7 @@ public class HomePageController {
         this.recipeService=recipeService;
     }
 
-    @RequestMapping({"/", "/index", "index.html", ""})
+    @RequestMapping(path={"/", "/index", "index.html", ""})
     public String doHome(Model model){
 
         //Optional<Category> categoryOptional = categoryRepository.findByDescription("Italian");
