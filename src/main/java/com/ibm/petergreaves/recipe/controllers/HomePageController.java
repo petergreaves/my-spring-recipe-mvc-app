@@ -1,16 +1,10 @@
 package com.ibm.petergreaves.recipe.controllers;
 
-import com.ibm.petergreaves.recipe.domain.Category;
-import com.ibm.petergreaves.recipe.domain.UnitOfMeasure;
-import com.ibm.petergreaves.recipe.repositories.CategoryRepository;
-import com.ibm.petergreaves.recipe.repositories.UnitOfMeasureRepository;
 import com.ibm.petergreaves.recipe.services.RecipeService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
-
-import java.util.Optional;
 
 @Slf4j
 @Controller

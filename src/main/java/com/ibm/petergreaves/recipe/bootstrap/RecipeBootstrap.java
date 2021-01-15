@@ -104,6 +104,7 @@ private RecipeRepository recipeRepository;
                 .quantity(new BigDecimal(4))
                 .oum(ounceUom.get())
                 .build();
+
         Ingredient tomatoSauce = Ingredient.builder()
                 .description("Tomato Sauce")
                 .quantity(new BigDecimal(1))
@@ -111,12 +112,6 @@ private RecipeRepository recipeRepository;
                 .build();
 
 
-
-        Set<Ingredient> guacIngredients = new HashSet<>();
-        guacIngredients.add(avocado);
-        guacIngredients.add(eggs);
-        guacIngredients.add(sugar);
-        guacIngredients.add(flour);
 
         Set<Category> guacCats = new HashSet<>();
         guacCats.add(catMexican.get());
@@ -130,13 +125,17 @@ private RecipeRepository recipeRepository;
                 .prepTime(25)
                 .difficulty(Difficulty.MODERATE)
                 .notes(guacNotes)
+                .directions("How to make guacamole")
                 .url("http://an.address")
                 .source("http://src.address")
-                .ingredients(guacIngredients)
                 .servings(4)
                 .description("Best ever guacamole")
                 .categories(guacCats)
                 .build();
+
+        guacamole.addIngredient(avocado);
+        guacamole.addIngredient(eggs);
+        guacamole.addIngredient(flour);
 
         retval.add(guacamole);
 
@@ -151,19 +150,23 @@ private RecipeRepository recipeRepository;
 
         Recipe pizza= Recipe.builder()
                 .title("Pizza")
+                .directions("Make a pizza....")
                 .cookTime(30)
                 .prepTime(15)
                 .difficulty(Difficulty.EASY)
                 .notes(guacNotes)
                 .url("http://an.address")
                 .source("http://src.address")
-                .ingredients(pizzaIngredients)
                 .servings(4)
                 .description("Pizza")
                 .categories(pizzaCats)
                 .build();
 
+        pizza.addIngredient(tomatoSauce);
+        pizza.addIngredient(mozzarella);
+
         retval.add(pizza);
+      //  System.out.println("######" +pizza.getIngredients());
 
         log.debug("Created recipe : "+ guacamole.getTitle());
         return retval;

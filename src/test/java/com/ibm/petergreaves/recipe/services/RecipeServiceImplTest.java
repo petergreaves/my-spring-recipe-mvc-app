@@ -7,12 +7,16 @@ import org.aspectj.lang.annotation.After;
 import org.aspectj.lang.annotation.Before;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.provider.Arguments;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -56,5 +60,35 @@ class RecipeServiceImplTest {
 
 
       //  Mock
+    }
+
+    @Test
+    void getRecipeByID(){
+        Recipe rec1 = new Recipe();
+
+        Long id = 2L;
+        rec1.setId(id);
+
+        final ArgumentCaptor<Recipe> captor = ArgumentCaptor.forClass(Recipe.class);
+
+        when(recipeRepository.findById(id)).thenReturn(Optional.of(rec1));
+
+        Recipe recipeReturned = recipeService.getRecipeByID(id);
+
+        assertEquals(recipeReturned.getId(), rec1.getId());
+        verify(recipeRepository, times(1)).findById(anyLong());
+    }
+
+    @Test
+    void getRecipeByIDWithNotFoundThrowException(){
+
+        Long id = 1002L;
+
+        when(recipeRepository.findById(id)).thenReturn(Optional.empty());
+
+
+        assertThrows(RuntimeException.class,() -> { recipeService.getRecipeByID(id);} );
+
+        verify(recipeRepository, times(1)).findById(anyLong());
     }
 }

@@ -54,6 +54,7 @@ public class Recipe {
 
 
     public Recipe addIngredient(Ingredient i){
+
         i.setRecipe(this);
         this.ingredients.add(i);
         return this;
