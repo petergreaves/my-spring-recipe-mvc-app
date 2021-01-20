@@ -23,9 +23,13 @@ public class RecipeServiceImpl implements RecipeService{
 
 
     private final RecipeRepository recipeRepository;
+    private final RecipeToRecipeCommand recipeToRecipeCommand;
+    private final RecipeCommandToRecipe recipeCommandToRecipe;
 
-    public RecipeServiceImpl(RecipeRepository recipeRepository) {
+    public RecipeServiceImpl(RecipeRepository recipeRepository, RecipeToRecipeCommand recipeToRecipeCommand, RecipeCommandToRecipe recipeCommandToRecipe) {
         this.recipeRepository = recipeRepository;
+        this.recipeToRecipeCommand = recipeToRecipeCommand;
+        this.recipeCommandToRecipe = recipeCommandToRecipe;
     }
 
     @Override
@@ -35,6 +39,20 @@ public class RecipeServiceImpl implements RecipeService{
         recipeRepository.findAll().iterator().forEachRemaining(recipes::add);
 
         return recipes;
+    }
+
+    @Override
+    @Transactional
+    public RecipeCommand findRecipeCommandByID(Long id) {
+
+        Optional<Recipe> recipeOptional = recipeRepository.findById(id);
+        if (recipeOptional.isEmpty()) {
+            return null;
+        }
+        else{
+
+            return recipeToRecipeCommand.convert(recipeOptional.get());
+        }
     }
 
     @Override
@@ -57,6 +75,6 @@ public class RecipeServiceImpl implements RecipeService{
 
         Recipe detachedRecipe = new RecipeCommandToRecipe().convert(command);
         Recipe savedRecipe = recipeRepository.save(detachedRecipe);
-        return new RecipeToRecipeCommand().convert(savedRecipe);
+        return recipeToRecipeCommand.convert(savedRecipe);
     }
 }

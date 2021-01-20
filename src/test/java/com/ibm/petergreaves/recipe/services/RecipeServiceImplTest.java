@@ -1,5 +1,7 @@
 package com.ibm.petergreaves.recipe.services;
 
+import com.ibm.petergreaves.recipe.converters.RecipeCommandToRecipe;
+import com.ibm.petergreaves.recipe.converters.RecipeToRecipeCommand;
 import com.ibm.petergreaves.recipe.domain.Recipe;
 import com.ibm.petergreaves.recipe.repositories.RecipeRepository;
 import lombok.Setter;
@@ -34,7 +36,7 @@ class RecipeServiceImplTest {
     @BeforeEach
     public void openMocks() {
         closeable = MockitoAnnotations.openMocks(this);
-        recipeService = new RecipeServiceImpl(recipeRepository);
+        recipeService = new RecipeServiceImpl(recipeRepository, new RecipeToRecipeCommand(), new RecipeCommandToRecipe());
     }
 
     @AfterEach
