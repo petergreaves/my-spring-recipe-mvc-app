@@ -19,6 +19,7 @@ public class RecipeController {
         this.recipeService=recipeService;
     }
 
+    @GetMapping
     @RequestMapping(value={"/recipe/{id}/show"}, method = RequestMethod.GET)
     public String getRecipeByID(Model model, @PathVariable String id){
 
@@ -29,6 +30,19 @@ public class RecipeController {
         return "recipe/show";
     }
 
+    @GetMapping
+    @RequestMapping(value={"/recipe/{id}/delete"}, method = RequestMethod.GET)
+    public String deleteRecipeByID(@PathVariable String id){
+
+        log.debug("Got request to delete recipe " + id);
+        recipeService.deleteByID(Long.parseLong(id));
+
+
+        return "redirect:/";
+    }
+
+
+    @GetMapping
     @RequestMapping(value={"/recipe/{id}/update"}, method = RequestMethod.GET)
     public String getUpdateViewForRecipe(Model model, @PathVariable String id){
 
@@ -39,6 +53,7 @@ public class RecipeController {
         return "recipe/recipeform";
     }
 
+    @GetMapping
     @RequestMapping("/recipe/new")
     public String newRecipe(Model model){
 

@@ -21,8 +21,7 @@ import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 
 class RecipeControllerTest {
 
@@ -160,6 +159,37 @@ class RecipeControllerTest {
                 .andExpect(MockMvcResultMatchers.model().attributeExists("recipe"));
 
         verify(recipeService, times(1)).findRecipeCommandByID(anyLong());
+
+
+    }
+
+
+    @Test
+    void testDeleteAction(){
+
+        //given
+
+        Long idToDelete = 33L;
+
+       // when(recipeService.deleteByID(idToDelete)).thenReturn(void);
+
+        controller.deleteRecipeByID(idToDelete+"");
+
+        verify(recipeService, times(1)).deleteByID(anyLong());
+
+
+    }
+
+    @Test
+    void testDeleteRequest() throws Exception{
+
+        MockMvc mockMvc = MockMvcBuilders.standaloneSetup(controller).build();
+        mockMvc.perform(get("/recipe/333/delete"))
+                .andExpect(MockMvcResultMatchers.status().is3xxRedirection())
+                .andExpect(MockMvcResultMatchers.view().name("redirect:/"))
+                .andExpect(MockMvcResultMatchers.model().attributeDoesNotExist("recipe"));
+
+        verify(recipeService, times(1)).deleteByID(anyLong());
 
 
     }

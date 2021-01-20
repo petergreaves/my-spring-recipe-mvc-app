@@ -87,10 +87,21 @@ class RecipeServiceImplTest {
         Long id = 1002L;
 
         when(recipeRepository.findById(id)).thenReturn(Optional.empty());
-
-
         assertThrows(RuntimeException.class,() -> { recipeService.getRecipeByID(id);} );
-
         verify(recipeRepository, times(1)).findById(anyLong());
+    }
+
+    @Test
+    void deleteRecipeByID(){
+
+        //given
+        Long id = 2L;
+
+        //when
+        recipeService.deleteByID(id);
+
+        //then
+        verify(recipeRepository, times(1)).deleteById(id);
+
     }
 }
