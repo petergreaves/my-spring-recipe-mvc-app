@@ -81,34 +81,34 @@ private RecipeRepository recipeRepository;
 
         Ingredient sugar = Ingredient.builder()
                 .description("Sugar")
-                .oum(cupUom.get())
+                .uom(cupUom.get())
                 .quantity(new BigDecimal(0.5))
                 .build();
         Ingredient eggs = Ingredient.builder()
                 .description("Eggs")
                 .quantity(new BigDecimal(2))
-                .oum(cupUom.get())
+                .uom(cupUom.get())
                 .build();
         Ingredient flour = Ingredient.builder()
                 .description("Flour")
                 .quantity(new BigDecimal(1))
-                .oum(cupUom.get())
+                .uom(cupUom.get())
                 .build();
         Ingredient avocado = Ingredient.builder()
                 .description("Avocado")
                 .quantity(new BigDecimal(1))
-                .oum(eachUom.get())
+                .uom(eachUom.get())
                 .build();
         Ingredient mozzarella = Ingredient.builder()
                 .description("Mozzarella")
                 .quantity(new BigDecimal(4))
-                .oum(ounceUom.get())
+                .uom(ounceUom.get())
                 .build();
 
         Ingredient tomatoSauce = Ingredient.builder()
                 .description("Tomato Sauce")
                 .quantity(new BigDecimal(1))
-                .oum(cupUom.get())
+                .uom(cupUom.get())
                 .build();
 
 
@@ -119,6 +119,13 @@ private RecipeRepository recipeRepository;
 
         log.debug("Created recipes...");
 
+        Set<Ingredient> guacIngreds = new HashSet<>();
+
+
+        guacIngreds.add(avocado);
+        guacIngreds.add(eggs);
+        guacIngreds.add(flour);
+
         Recipe guacamole= Recipe.builder()
                 .title("Best ever guacamole")
                 .cookTime(60)
@@ -126,7 +133,7 @@ private RecipeRepository recipeRepository;
                 .difficulty(Difficulty.MODERATE)
                 .notes(guacNotes)
                 .directions("How to make guacamole")
-                .ingredients(new HashSet<>())
+                .ingredients(guacIngreds)
                 .url("http://an.address")
                 .source("http://src.address")
                 .servings(4)
@@ -134,9 +141,7 @@ private RecipeRepository recipeRepository;
                 .categories(guacCats)
                 .build();
 
-        guacamole.addIngredient(avocado);
-        guacamole.addIngredient(eggs);
-        guacamole.addIngredient(flour);
+        guacamole.getIngredients().forEach(ing ->ing.setRecipe(guacamole));
 
         retval.add(guacamole);
 

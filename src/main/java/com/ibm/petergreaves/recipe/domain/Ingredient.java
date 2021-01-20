@@ -23,7 +23,7 @@ public class Ingredient {
     private BigDecimal quantity;
 
     @OneToOne(fetch = FetchType.EAGER)
-    private UnitOfMeasure oum;
+    private UnitOfMeasure uom;
 
 
 }

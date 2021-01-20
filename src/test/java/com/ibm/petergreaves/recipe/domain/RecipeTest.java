@@ -22,7 +22,7 @@ class RecipeTest {
         Ingredient tomatoSauce = Ingredient.builder()
                 .description("Tomato Sauce")
                 .quantity(new BigDecimal(1))
-                .oum(cupUom)
+                .uom(cupUom)
                 .build();
 
         ingredients.add(tomatoSauce);

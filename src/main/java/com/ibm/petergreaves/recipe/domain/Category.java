@@ -1,7 +1,6 @@
 package com.ibm.petergreaves.recipe.domain;
 
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.*;
 
 import javax.persistence.*;
 import java.util.Objects;
@@ -9,7 +8,10 @@ import java.util.Set;
 
 @Data
 @Entity
+@NoArgsConstructor
+@AllArgsConstructor
 @EqualsAndHashCode(exclude={"recipes"})
+@Builder
 public class Category {
 
     @Id

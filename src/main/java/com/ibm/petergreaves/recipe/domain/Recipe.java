@@ -10,6 +10,7 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(exclude = {"notes"})
+@ToString(exclude = {"ingredients"})
 @Entity
 @Builder
 public class Recipe {
@@ -35,12 +36,15 @@ public class Recipe {
         joinColumns = @JoinColumn(name="recipe_id"),
             inverseJoinColumns = @JoinColumn(name="category_id")
     )
+
+    @Builder.Default
     private Set<Category> categories= new HashSet<>();
 
     @Enumerated(value=EnumType.STRING)
     private Difficulty difficulty;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "recipe")
+    @Builder.Default
     private Set<Ingredient> ingredients = new HashSet<>();
 
     @OneToOne(cascade = CascadeType.ALL)

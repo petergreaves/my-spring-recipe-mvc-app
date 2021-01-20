@@ -1,10 +1,17 @@
 package com.ibm.petergreaves.recipe.services;
 
+import com.ibm.petergreaves.recipe.commands.CategoryCommand;
+import com.ibm.petergreaves.recipe.commands.IngredientCommand;
+import com.ibm.petergreaves.recipe.commands.RecipeCommand;
+import com.ibm.petergreaves.recipe.converters.*;
+import com.ibm.petergreaves.recipe.domain.Category;
+import com.ibm.petergreaves.recipe.domain.Ingredient;
 import com.ibm.petergreaves.recipe.domain.Recipe;
 import com.ibm.petergreaves.recipe.repositories.RecipeRepository;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashSet;
 import java.util.Optional;
@@ -36,10 +43,20 @@ public class RecipeServiceImpl implements RecipeService{
 
         Optional<Recipe> recipeOptional = recipeRepository.findById(id);
 
-        if (!recipeOptional.isPresent()){
+        if (recipeOptional.isEmpty()){
 
-            throw new RuntimeException("Not recipe found with id : " +id);
+            throw new RuntimeException("No recipe found with id : " +id);
         }
-      return recipeOptional.get();
+        else return recipeOptional.get();
+        }
+
+
+    @Override
+    @Transactional
+    public RecipeCommand saveRecipeCommand(RecipeCommand command) {
+
+        Recipe detachedRecipe = new RecipeCommandToRecipe().convert(command);
+        Recipe savedRecipe = recipeRepository.save(detachedRecipe);
+        return new RecipeToRecipeCommand().convert(savedRecipe);
     }
 }

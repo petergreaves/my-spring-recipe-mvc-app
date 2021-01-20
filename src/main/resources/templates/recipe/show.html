@@ -90,7 +90,7 @@
                                 <ul>
                                     <li th:each="ingred: ${recipe.ingredients}"
                                         th:text="${(ingred.quantity) +
-                                        ' '+(ingred.oum.description) +
+                                        ' '+(ingred.uom.description) +
                                         ' - '+(ingred.description)}">ingredient</li>
                                 </ul>
                             </div>
