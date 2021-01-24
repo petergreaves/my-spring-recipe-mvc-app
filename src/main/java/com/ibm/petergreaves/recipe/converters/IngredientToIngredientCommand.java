@@ -20,12 +20,21 @@ public class IngredientToIngredientCommand implements Converter<Ingredient, Ingr
             return null;
         }
 
-        return IngredientCommand.builder()
+        IngredientCommand command = IngredientCommand.builder()
                 .id(ingredient.getId())
                 .description(ingredient.getDescription())
                 .uom(new UnitOfMeasureToUnitOfMeasureCommand().convert(ingredient.getUom()))
                 .quantity(ingredient.getQuantity())
                 .build();
+
+        // just a check to if the ingred has an associated recipe
+
+        if (ingredient.getRecipe()!=null){
+
+            command.setRecipeID(ingredient.getRecipe().getId());
+        }
+
+        return command;
 
     }
 }

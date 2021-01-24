@@ -38,6 +38,7 @@ public class IngredientToIngredientCommandTest {
         uom.setId(uomID);
         expected = IngredientCommand.builder()
                 .id(idExpected)
+                .recipeID(recipe.getId())
                 .quantity(qty)
                 .description(desc)
                 .uom(new UnitOfMeasureToUnitOfMeasureCommand().convert(uom))
@@ -60,6 +61,7 @@ public class IngredientToIngredientCommandTest {
         assertNotNull(ingredientConverter.convert(Ingredient.builder().build()));
 
     }
+
 
 
     @Test
