@@ -4,6 +4,7 @@ import com.ibm.petergreaves.recipe.commands.IngredientCommand;
 import com.ibm.petergreaves.recipe.commands.RecipeCommand;
 import com.ibm.petergreaves.recipe.services.IngredientService;
 import com.ibm.petergreaves.recipe.services.RecipeService;
+import com.ibm.petergreaves.recipe.services.UnitOfMeasureService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
@@ -17,7 +18,10 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.ui.Model;
 
+import javax.persistence.criteria.CriteriaBuilder;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -31,6 +35,9 @@ class IngredientControllerTest {
 
     @Mock
     IngredientService ingredientService;
+
+    @Mock
+    UnitOfMeasureService unitOfMeasureService;
 
     @Mock
     RecipeService recipeService;
@@ -54,7 +61,7 @@ class IngredientControllerTest {
     @BeforeEach
     public void openMocks() {
         closeable = MockitoAnnotations.openMocks(this);
-        controller = new IngredientController(ingredientService, recipeService);
+        controller = new IngredientController(ingredientService, recipeService, unitOfMeasureService);
         recipeCommand = new RecipeCommand();
         recipeCommand.setId(99L);
 
@@ -87,8 +94,21 @@ class IngredientControllerTest {
         verify(recipeService, times(1)).findRecipeCommandByID(anyLong());
 
     }
+    @Test
+    void deleteIngredientByRecipeIDAndIngredientID() throws Exception{
 
+        MockMvc mockMvc = MockMvcBuilders.standaloneSetup(controller).build();
+        IngredientCommand i1 = IngredientCommand.builder().id(1L).description(ingredDesc1).recipeID(3L).build();
 
+        when(ingredientService.findByRecipeIdAndIngredientId(anyLong(),anyLong())).thenReturn(i1);
+      //then
+        mockMvc.perform(get("/recipe/2/ingredients/3/delete")
+        )
+                .andExpect(MockMvcResultMatchers.status().is3xxRedirection())
+                .andExpect(MockMvcResultMatchers.view().name("redirect:/recipe/2/ingredients"));
+
+        verify(ingredientService, times(1)).removeIngredientCommand(i1);
+    }
 
     @Test
     void getIngredientByID() {
@@ -135,7 +155,7 @@ class IngredientControllerTest {
     }
 
     @Test
-    void getIngredientByIDMVC() throws Exception{
+    void getIngredientByIDForShowMVC() throws Exception{
 
         IngredientCommand ingredientCommand = IngredientCommand.builder().id(2L).build();
         when(ingredientService.findByRecipeIdAndIngredientId(anyLong(),anyLong())).thenReturn(ingredientCommand);
@@ -150,6 +170,27 @@ class IngredientControllerTest {
         verify(ingredientService, times(1)).findByRecipeIdAndIngredientId(anyLong(),anyLong());
 
     }
+
+    @Test
+    void getIngredientByIDForUpdateMVC() throws Exception{
+
+        IngredientCommand ingredientCommand = IngredientCommand.builder().id(2L).build();
+        when(ingredientService.findByRecipeIdAndIngredientId(anyLong(),anyLong())).thenReturn(ingredientCommand);
+
+        // when(recipeService.findRecipeCommandByID(anyLong())).thenReturn(recipeCommand);
+
+        MockMvc mockMvc = MockMvcBuilders.standaloneSetup(controller).build();
+        mockMvc.perform(get("/recipe/99/ingredients/2/update"))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.model().attributeExists("ingredient"))
+                .andExpect(MockMvcResultMatchers.model().attributeExists("uoms"))
+                .andExpect(MockMvcResultMatchers.view().name("recipe/ingredient/ingredientform"));
+        verify(ingredientService, times(1)).findByRecipeIdAndIngredientId(anyLong(),anyLong());
+
+    }
+
+
+
 
     @Test
     @Disabled

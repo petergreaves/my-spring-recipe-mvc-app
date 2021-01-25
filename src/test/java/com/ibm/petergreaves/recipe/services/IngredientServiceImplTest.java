@@ -1,19 +1,19 @@
 package com.ibm.petergreaves.recipe.services;
 
 import com.ibm.petergreaves.recipe.commands.IngredientCommand;
+import com.ibm.petergreaves.recipe.converters.IngredientCommandToIngredient;
 import com.ibm.petergreaves.recipe.converters.IngredientToIngredientCommand;
 import com.ibm.petergreaves.recipe.converters.RecipeCommandToRecipe;
 import com.ibm.petergreaves.recipe.converters.RecipeToRecipeCommand;
 import com.ibm.petergreaves.recipe.domain.Ingredient;
 import com.ibm.petergreaves.recipe.domain.Recipe;
 import com.ibm.petergreaves.recipe.repositories.RecipeRepository;
+import com.ibm.petergreaves.recipe.repositories.UnitOfMeasureRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-
-import javax.persistence.criteria.CriteriaBuilder;
 
 import java.util.HashSet;
 import java.util.Optional;
@@ -31,12 +31,15 @@ class IngredientServiceImplTest {
     @Mock
     RecipeRepository recipeRepository;
 
+    @Mock
+    UnitOfMeasureRepository unitOfMeasureRepository;
+
     private AutoCloseable closeable;
 
     @BeforeEach
     public void openMocks() {
         closeable = MockitoAnnotations.openMocks(this);
-        ingredientService = new IngredientServiceImpl(recipeRepository, new IngredientToIngredientCommand());
+        ingredientService = new IngredientServiceImpl(recipeRepository, new IngredientCommandToIngredient(),new IngredientToIngredientCommand(),  unitOfMeasureRepository);
     }
 
     @AfterEach

@@ -6,13 +6,12 @@ import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@EqualsAndHashCode(exclude = {"notes"})
-@ToString(exclude = {"ingredients"})
+@Getter
+@Setter
 @Entity
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Recipe {
 
     @Id

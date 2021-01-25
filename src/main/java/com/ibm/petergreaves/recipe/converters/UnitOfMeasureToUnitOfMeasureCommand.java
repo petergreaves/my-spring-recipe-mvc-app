@@ -5,7 +5,9 @@ import com.ibm.petergreaves.recipe.domain.UnitOfMeasure;
 import com.sun.istack.Nullable;
 import lombok.Synchronized;
 import org.springframework.core.convert.converter.Converter;
+import org.springframework.stereotype.Component;
 
+@Component
 public class UnitOfMeasureToUnitOfMeasureCommand implements Converter<UnitOfMeasure, UnitOfMeasureCommand> {
 
     @Override

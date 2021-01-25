@@ -79,6 +79,7 @@ public class RecipeServiceImpl implements RecipeService{
     }
 
     @Override
+    @Transactional
     public void deleteByID(Long id) {
         recipeRepository.deleteById(id);
     }
