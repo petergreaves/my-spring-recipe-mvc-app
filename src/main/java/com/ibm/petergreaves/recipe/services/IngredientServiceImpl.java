@@ -12,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 
+import javax.persistence.criteria.CriteriaBuilder;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
@@ -150,12 +151,20 @@ public class IngredientServiceImpl implements IngredientService {
             recipe = recipeOptional.get();
         }
 
+        Optional<Ingredient> toDelete= recipe.getIngredients()
+                .stream()
+                .filter(in -> in.getId().equals(ingredientID))
+                .findFirst();
 
-        log.debug("Removed ingredient with ID : " + ingredientID);
-        recipe.getIngredients().removeIf(ing -> ingredientID.equals(ing.getId()));
-        recipeRepository.save(recipe);
 
-        // use command object to avoid lazy load errors in Thymeleaf.
+        if (toDelete.isPresent()){
+            log.debug("found Ingredient");
+            Ingredient ingredientToDelete = toDelete.get();
+            ingredientToDelete.setRecipe(null);
+            recipe.getIngredients().remove(toDelete.get());
+            recipeRepository.save(recipe);
+        }
+
 
     }
 }

@@ -27,8 +27,7 @@ public class IngredientController {
         this.unitOfMeasureService = unitOfMeasureService;
     }
 
-    @GetMapping
-    @RequestMapping("/recipe/{recipeID}/ingredients")
+    @GetMapping("/recipe/{recipeID}/ingredients")
     public String getIngredientsForRecipeID(Model model, @PathVariable String recipeID) {
         log.debug("Getting ingredients for recipe : " + recipeID);
 
@@ -39,8 +38,8 @@ public class IngredientController {
 
     }
 
-    @GetMapping
-    @RequestMapping("/recipe/{recipeID}/ingredients/{ingredientID}/show")
+
+    @GetMapping("/recipe/{recipeID}/ingredients/{ingredientID}/show")
     public String getIngredientForRecipeAndIngredientIDShow(Model model, @PathVariable Map<String, String> pathVarsMap) {
 
 
@@ -58,8 +57,8 @@ public class IngredientController {
 
     }
 
-    @GetMapping
-    @RequestMapping("/recipe/{recipeID}/ingredients/{ingredientID}/update")
+
+    @GetMapping("/recipe/{recipeID}/ingredients/{ingredientID}/update")
     public String getIngredientForRecipeAndIngredientIDUpdate(Model model, @PathVariable Map<String, String> pathVarsMap) {
 
 
@@ -78,8 +77,8 @@ public class IngredientController {
 
     }
 
-    @PostMapping
-    @RequestMapping("/recipe/{recipeID}/ingredient")
+
+    @PostMapping("/recipe/{recipeID}/ingredient")
     public String doSaveOrUpdateIngredient(@ModelAttribute IngredientCommand ingredientCommand, @PathVariable String recipeID) {
 
         log.debug("Got an update to ingredients for recipe id : " + recipeID);
@@ -89,8 +88,7 @@ public class IngredientController {
     }
 
 
-    @GetMapping
-    @RequestMapping("/recipe/{recipeID}/ingredients/{ingredientID}/delete")
+    @GetMapping("/recipe/{recipeID}/ingredients/{ingredientID}/delete")
     public String doDeleteIngredient(Model model, @PathVariable Map<String, String> paramMap) {
 
         Long recipeID = Long.parseLong(paramMap.get("recipeID"));
@@ -113,8 +111,8 @@ public class IngredientController {
     }
 
 
-    @GetMapping
-    @RequestMapping("/recipe/{recipeID}/ingredient/new")
+
+    @GetMapping("/recipe/{recipeID}/ingredient/new")
     public String newRecipeIngredient(Model model, @PathVariable String recipeID) {
 
         RecipeCommand recipeCommand = recipeService.findRecipeCommandByID(Long.valueOf(recipeID));

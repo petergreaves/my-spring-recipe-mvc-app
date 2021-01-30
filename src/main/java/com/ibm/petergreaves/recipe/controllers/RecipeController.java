@@ -19,8 +19,8 @@ public class RecipeController {
         this.recipeService=recipeService;
     }
 
-    @GetMapping
-    @RequestMapping(value={"/recipe/{id}/show"}, method = RequestMethod.GET)
+
+    @GetMapping(value={"/recipe/{id}/show"})
     public String getRecipeByID(Model model, @PathVariable String id){
 
        log.debug("Got request for recipe " + id);
@@ -30,8 +30,8 @@ public class RecipeController {
         return "recipe/show";
     }
 
-    @GetMapping
-    @RequestMapping(value={"/recipe/{id}/delete"}, method = RequestMethod.GET)
+
+    @GetMapping(value={"/recipe/{id}/delete"})
     public String deleteRecipeByID(@PathVariable String id){
 
         log.debug("Got request to delete recipe " + id);
@@ -42,8 +42,8 @@ public class RecipeController {
     }
 
 
-    @GetMapping
-    @RequestMapping(value={"/recipe/{id}/update"}, method = RequestMethod.GET)
+
+    @GetMapping(value={"/recipe/{id}/update"})
     public String getUpdateViewForRecipe(Model model, @PathVariable String id){
 
         log.debug("Got request for recipe for update" + id);
@@ -53,8 +53,8 @@ public class RecipeController {
         return "recipe/recipeform";
     }
 
-    @GetMapping
-    @RequestMapping("/recipe/new")
+
+    @GetMapping("/recipe/new")
     public String newRecipe(Model model){
 
         model.addAttribute("recipe", new RecipeCommand());
@@ -63,8 +63,8 @@ public class RecipeController {
 
     }
 
-    @PostMapping
-    @RequestMapping("/recipe")
+
+    @PostMapping("/recipe")
     public String doSaveOrUpdate(@ModelAttribute RecipeCommand recipe){
 
         RecipeCommand saved=recipeService.saveRecipeCommand(recipe);

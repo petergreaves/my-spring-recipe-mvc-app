@@ -108,6 +108,7 @@ class IngredientControllerTest {
                 .andExpect(MockMvcResultMatchers.view().name("redirect:/recipe/2/ingredients"));
 
         verify(ingredientService, times(1)).removeIngredientCommand(i1);
+        verify(ingredientService, times(1)).removeIngredientCommand(i1);
     }
 
     @Test
