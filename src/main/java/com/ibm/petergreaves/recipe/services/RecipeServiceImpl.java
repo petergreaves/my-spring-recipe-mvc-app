@@ -8,6 +8,7 @@ import com.ibm.petergreaves.recipe.domain.Category;
 import com.ibm.petergreaves.recipe.domain.Ingredient;
 import com.ibm.petergreaves.recipe.domain.Recipe;
 import com.ibm.petergreaves.recipe.exceptions.NotFoundException;
+import com.ibm.petergreaves.recipe.exceptions.ParamFormatException;
 import com.ibm.petergreaves.recipe.repositories.RecipeRepository;
 
 import lombok.extern.slf4j.Slf4j;
@@ -59,6 +60,7 @@ public class RecipeServiceImpl implements RecipeService{
     @Override
     public Recipe getRecipeByID(Long id) throws NotFoundException {
         log.debug("Getting recipe with ID " +id);
+
 
         Optional<Recipe> recipeOptional = recipeRepository.findById(id);
 

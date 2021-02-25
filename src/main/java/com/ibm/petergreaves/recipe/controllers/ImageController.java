@@ -3,6 +3,7 @@ package com.ibm.petergreaves.recipe.controllers;
 import com.ibm.petergreaves.recipe.commands.RecipeCommand;
 import com.ibm.petergreaves.recipe.converters.RecipeToRecipeCommand;
 import com.ibm.petergreaves.recipe.domain.Recipe;
+import com.ibm.petergreaves.recipe.exceptions.NotFoundException;
 import com.ibm.petergreaves.recipe.services.ImageService;
 import com.ibm.petergreaves.recipe.services.RecipeService;
 import lombok.extern.slf4j.Slf4j;
@@ -38,13 +39,13 @@ public class ImageController {
     }
 
     @GetMapping("/recipe/{recipeID}/imageform")
-    public String getImageForm(Model model, @PathVariable String recipeID){
+    public String getImageForm(Model model, @PathVariable String recipeID) {
 
         Long id = Long.valueOf(recipeID);
         RecipeCommand command = recipeService.findRecipeCommandByID(id);
-        if (command==null){
+        if (command == null) {
             throw new ResponseStatusException(
-                    HttpStatus.NOT_FOUND, "Recipe not found with id " +recipeID
+                    HttpStatus.NOT_FOUND, "Recipe not found with id " + recipeID
             );
         }
         model.addAttribute("recipe", command);
@@ -64,21 +65,23 @@ public class ImageController {
         }
 
         Byte[] imageBytesObj = command.getImage();
-        byte[] imageBytesPrim = new byte[imageBytesObj.length];
+        if (imageBytesObj != null & imageBytesObj.length > 0) {
+            byte[] imageBytesPrim = new byte[imageBytesObj.length];
 
-        int k = 0;
+            int k = 0;
 
-        for ( byte imageByte  : imageBytesObj) {
-                imageBytesPrim[k++] = imageByte ;
+            for (byte imageByte : imageBytesObj) {
+                imageBytesPrim[k++] = imageByte;
+            }
+
+            response.setContentType("image/jpeg");
+            InputStream is = new ByteArrayInputStream(imageBytesPrim);
+            IOUtils.copy(is, response.getOutputStream());
         }
-
-        response.setContentType("image/jpeg");
-        InputStream is = new ByteArrayInputStream(imageBytesPrim);
-        IOUtils.copy(is, response.getOutputStream());
     }
 
     @PostMapping("recipe/{id}/image")
-    public String handleImagePost(@PathVariable String id, @RequestParam("imagefile") MultipartFile file){
+    public String handleImagePost(@PathVariable String id, @RequestParam("imagefile") MultipartFile file) {
 
         service.saveImageFile(Long.valueOf(id), file);
 

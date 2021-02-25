@@ -3,6 +3,7 @@ package com.ibm.petergreaves.recipe.controllers;
 import com.ibm.petergreaves.recipe.commands.RecipeCommand;
 import com.ibm.petergreaves.recipe.domain.Recipe;
 import com.ibm.petergreaves.recipe.exceptions.NotFoundException;
+import com.ibm.petergreaves.recipe.exceptions.ParamFormatException;
 import com.ibm.petergreaves.recipe.services.RecipeService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -21,7 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 class RecipeControllerTest {
 
@@ -117,7 +118,7 @@ class RecipeControllerTest {
                 .param("id", "")
                 .param("title", "Recipe title"))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(MockMvcResultMatchers.view().name("redirect:/recipe/333/show"));
+                .andExpect(view().name("redirect:/recipe/333/show"));
 
     }
 
@@ -127,7 +128,7 @@ class RecipeControllerTest {
         MockMvc mockMvc = MockMvcBuilders.standaloneSetup(controller).build();
         mockMvc.perform(get("/recipe/new"))
                 .andExpect(status().isOk())
-                .andExpect(MockMvcResultMatchers.view().name("recipe/recipeform"));
+                .andExpect(view().name("recipe/recipeform"));
 
         verify(recipeService, times(0)).getRecipeByID(anyLong());
 
@@ -139,7 +140,7 @@ class RecipeControllerTest {
         MockMvc mockMvc = MockMvcBuilders.standaloneSetup(controller).build();
         mockMvc.perform(get("/recipe/33/show"))
                 .andExpect(status().isOk())
-                .andExpect(MockMvcResultMatchers.view().name("recipe/show"));
+                .andExpect(view().name("recipe/show"));
 
         verify(recipeService, times(1)).getRecipeByID(anyLong());
 
@@ -155,8 +156,8 @@ class RecipeControllerTest {
         MockMvc mockMvc = MockMvcBuilders.standaloneSetup(controller).build();
         mockMvc.perform(get("/recipe/333/update"))
                 .andExpect(status().isOk())
-                .andExpect(MockMvcResultMatchers.view().name("recipe/recipeform"))
-                .andExpect(MockMvcResultMatchers.model().attributeExists("recipe"));
+                .andExpect(view().name("recipe/recipeform"))
+                .andExpect(model().attributeExists("recipe"));
 
         verify(recipeService, times(1)).findRecipeCommandByID(anyLong());
 
@@ -186,8 +187,8 @@ class RecipeControllerTest {
         MockMvc mockMvc = MockMvcBuilders.standaloneSetup(controller).build();
         mockMvc.perform(get("/recipe/333/delete"))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(MockMvcResultMatchers.view().name("redirect:/"))
-                .andExpect(MockMvcResultMatchers.model().attributeDoesNotExist("recipe"));
+                .andExpect(view().name("redirect:/"))
+                .andExpect(model().attributeDoesNotExist("recipe"));
 
         verify(recipeService, times(1)).deleteByID(anyLong());
 
@@ -200,7 +201,20 @@ class RecipeControllerTest {
         when(recipeService.getRecipeByID(anyLong())).thenThrow(NotFoundException.class);
         MockMvc mockMvc = MockMvcBuilders.standaloneSetup(controller).build();
 
-        mockMvc.perform(get("/recipe/1/show")).andExpect(status().isNotFound());
+        mockMvc.perform(get("/recipe/5/show"))
+                .andExpect(status().isNotFound())
+                .andExpect(view().name("404error"));
+
+
+    }
+
+    @Test
+    public void handleBadRecipeParam() throws Exception{
+
+        MockMvc mockMvc = MockMvcBuilders.standaloneSetup(controller).build();
+        mockMvc.perform(get("/recipe/a/show"))
+                .andExpect(status().is4xxClientError())
+                .andExpect(view().name("400error"));
 
 
     }
