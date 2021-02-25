@@ -7,6 +7,7 @@ import com.ibm.petergreaves.recipe.converters.*;
 import com.ibm.petergreaves.recipe.domain.Category;
 import com.ibm.petergreaves.recipe.domain.Ingredient;
 import com.ibm.petergreaves.recipe.domain.Recipe;
+import com.ibm.petergreaves.recipe.exceptions.NotFoundException;
 import com.ibm.petergreaves.recipe.repositories.RecipeRepository;
 
 import lombok.extern.slf4j.Slf4j;
@@ -56,14 +57,14 @@ public class RecipeServiceImpl implements RecipeService{
     }
 
     @Override
-    public Recipe getRecipeByID(Long id) {
+    public Recipe getRecipeByID(Long id) throws NotFoundException {
         log.debug("Getting recipe with ID " +id);
 
         Optional<Recipe> recipeOptional = recipeRepository.findById(id);
 
         if (recipeOptional.isEmpty()){
 
-            throw new RuntimeException("No recipe found with id : " +id);
+            throw new NotFoundException("No recipe found with id : " +id);
         }
         else return recipeOptional.get();
         }
