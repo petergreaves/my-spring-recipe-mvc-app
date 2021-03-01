@@ -1,14 +1,9 @@
 package com.ibm.petergreaves.recipe.services;
 
-import com.ibm.petergreaves.recipe.commands.CategoryCommand;
-import com.ibm.petergreaves.recipe.commands.IngredientCommand;
 import com.ibm.petergreaves.recipe.commands.RecipeCommand;
 import com.ibm.petergreaves.recipe.converters.*;
-import com.ibm.petergreaves.recipe.domain.Category;
-import com.ibm.petergreaves.recipe.domain.Ingredient;
 import com.ibm.petergreaves.recipe.domain.Recipe;
 import com.ibm.petergreaves.recipe.exceptions.NotFoundException;
-import com.ibm.petergreaves.recipe.exceptions.ParamFormatException;
 import com.ibm.petergreaves.recipe.repositories.RecipeRepository;
 
 import lombok.extern.slf4j.Slf4j;

@@ -5,11 +5,19 @@ import com.ibm.petergreaves.recipe.repositories.CategoryRepository;
 import com.ibm.petergreaves.recipe.repositories.RecipeRepository;
 import com.ibm.petergreaves.recipe.repositories.UnitOfMeasureRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Component;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.math.BigDecimal;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.*;
 
 @Slf4j
@@ -19,6 +27,9 @@ public class RecipeBootstrap implements ApplicationListener<ContextRefreshedEven
 private UnitOfMeasureRepository uomRepository;
 private CategoryRepository categoryRepository;
 private RecipeRepository recipeRepository;
+
+    @Autowired
+    ResourceLoader resourceLoader;
 
     public RecipeBootstrap(UnitOfMeasureRepository uomRepository, CategoryRepository categoryRepository, RecipeRepository recipeRepository) {
         this.uomRepository = uomRepository;
@@ -171,6 +182,39 @@ private RecipeRepository recipeRepository;
 
         pizza.addIngredient(tomatoSauce);
         pizza.addIngredient(mozzarella);
+
+        // load  images
+
+        try{
+
+            Resource resource = resourceLoader.getResource("classpath:static/images/Eq_it-na_pizza-margherita_sep2005_sml.jpg");
+            InputStream input = resource.getInputStream();
+            File file = resource.getFile();
+
+            final byte[] pizzaImageAsPrim = Files.readAllBytes(Paths.get(file.getPath()));
+
+            Byte[] bytes = new Byte[pizzaImageAsPrim.length];
+            Arrays.setAll(bytes, n -> pizzaImageAsPrim[n]);
+            pizza.setImage(bytes);
+
+            bytes = null;
+            resource = resourceLoader.getResource("classpath:static/images/guacamole400x400.jpg");
+            input = resource.getInputStream();
+            file = resource.getFile();
+
+            final byte[] guacImageAsPrim = Files.readAllBytes(Paths.get(file.getPath()));
+
+            bytes = new Byte[guacImageAsPrim.length];
+            Arrays.setAll(bytes, n -> guacImageAsPrim[n]);
+            guacamole.setImage(bytes);
+
+
+
+
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         retval.add(pizza);
       //  System.out.println("######" +pizza.getIngredients());

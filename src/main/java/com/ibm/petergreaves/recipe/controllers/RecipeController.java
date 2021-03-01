@@ -3,12 +3,14 @@ package com.ibm.petergreaves.recipe.controllers;
 import com.ibm.petergreaves.recipe.commands.RecipeCommand;
 import com.ibm.petergreaves.recipe.domain.Recipe;
 import com.ibm.petergreaves.recipe.exceptions.NotFoundException;
-import com.ibm.petergreaves.recipe.exceptions.ParamFormatException;
 import com.ibm.petergreaves.recipe.services.RecipeService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.ObjectError;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -16,7 +18,8 @@ import org.springframework.web.servlet.ModelAndView;
 @Controller
 public class RecipeController {
 
-    private RecipeService recipeService;
+    private final RecipeService recipeService;
+    private static final String RECIPE_FORM_VIEWNAME = "recipe/recipeform";
 
     public RecipeController(RecipeService recipeService) {
 
@@ -27,16 +30,8 @@ public class RecipeController {
     @GetMapping(value={"/recipe/{id}/show"})
     public String getRecipeByID(Model model, @PathVariable String id){
 
-        Long idToGet = 0L;
-        try {
+        Long idToGet  = Long.parseLong(id);
 
-            idToGet = Long.parseLong(id);
-
-        }
-        catch(NumberFormatException nfe){
-
-            throw new ParamFormatException("Error trying to parse recipe id with request param for id : " + id +  ", long expected.");
-        }
 
        log.debug("Got request for recipe " + idToGet);
        Recipe recipe=recipeService.getRecipeByID(idToGet);
@@ -49,16 +44,7 @@ public class RecipeController {
     @GetMapping(value={"/recipe/{id}/delete"})
     public String deleteRecipeByID(@PathVariable String id){
 
-        Long idToGet = 0L;
-        try {
-
-            idToGet = Long.parseLong(id);
-
-        }
-        catch(NumberFormatException nfe){
-
-            throw new ParamFormatException("Error trying to parse recipe id with request param for id : " + id +  ", long expected.");
-        }
+        Long idToGet = Long.parseLong(id);
 
         log.debug("Got request to delete recipe " + idToGet);
         recipeService.deleteByID(idToGet);
@@ -72,11 +58,11 @@ public class RecipeController {
     @GetMapping(value={"/recipe/{id}/update"})
     public String getUpdateViewForRecipe(Model model, @PathVariable String id){
 
-        log.debug("Got request for recipe for update" + id);
+        log.debug("Got request for recipe for update with id : " + id);
         RecipeCommand recipeCommand=recipeService.findRecipeCommandByID(Long.parseLong(id));
         model.addAttribute("recipe", recipeCommand);
 
-        return "recipe/recipeform";
+        return RECIPE_FORM_VIEWNAME;
     }
 
 
@@ -85,13 +71,22 @@ public class RecipeController {
 
         model.addAttribute("recipe", new RecipeCommand());
 
-        return "recipe/recipeform";
+        return RECIPE_FORM_VIEWNAME;
 
     }
 
 
     @PostMapping("/recipe")
-    public String doSaveOrUpdate(@ModelAttribute RecipeCommand recipe){
+    public String doSaveOrUpdate(@Validated @ModelAttribute("recipe") RecipeCommand recipe, BindingResult bindingResult, Model model){
+
+        if (bindingResult.hasErrors()){
+
+            for (ObjectError allError : bindingResult.getAllErrors()) {
+                    log.error("Recipe error validating : " +allError.getDefaultMessage());
+            }
+            return RECIPE_FORM_VIEWNAME;
+
+        }
 
         RecipeCommand saved=recipeService.saveRecipeCommand(recipe);
         return "redirect:/recipe/"+saved.getId()+"/show";
@@ -111,7 +106,7 @@ public class RecipeController {
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler(ParamFormatException.class)
+    @ExceptionHandler(NumberFormatException.class)
     public ModelAndView handleParamFormatEx(Exception  exception ){
 
         log.error("Got a 400 error");

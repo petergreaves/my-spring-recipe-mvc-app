@@ -30,8 +30,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 
 class ImageControllerTest {
@@ -50,9 +49,15 @@ class ImageControllerTest {
 
     private AutoCloseable closeable;
 
+    MockMvc mockMvc;
+
     @BeforeEach
     public void openMocks() {
         closeable = MockitoAnnotations.openMocks(this);
+
+         mockMvc = MockMvcBuilders.standaloneSetup(controller)
+                .setControllerAdvice(new ControllerExceptionHandler())
+                .build();
     }
 
 
@@ -77,7 +82,7 @@ class ImageControllerTest {
     @Test
     void getImageForm404MVC() throws Exception {
 
-        MockMvc mockMvc = MockMvcBuilders.standaloneSetup(controller).build();
+
         when(recipeService.findRecipeCommandByID(anyLong())).thenReturn(null);
 
         mockMvc.perform(get("/recipe/1/imageform"))
@@ -102,8 +107,6 @@ class ImageControllerTest {
         RecipeCommand command = RecipeCommand.builder().id(33L).image(bytesObject).build();
         when(recipeService.findRecipeCommandByID(anyLong())).thenReturn(command);
 
-        MockMvc mockMvc = MockMvcBuilders.standaloneSetup(controller).build();
-
         MockHttpServletResponse resp=mockMvc.perform(get("/recipe/1/recipeimage"))
                 .andExpect(status().isOk())
                 .andReturn().getResponse();
@@ -115,19 +118,17 @@ class ImageControllerTest {
     @Test
     void getImageFormMVC() throws Exception{
 
-        MockMvc mockMvc = MockMvcBuilders.standaloneSetup(controller).build();
         when(recipeService.findRecipeCommandByID(anyLong())).thenReturn(RecipeCommand.builder().id(1L).build());
 
         mockMvc.perform(get("/recipe/1/imageform"))
                 .andExpect(status().isOk())
-                .andExpect(MockMvcResultMatchers.view().name("/recipe/imageuploadform"))
+                .andExpect(view().name("/recipe/imageuploadform"))
                 .andExpect(MockMvcResultMatchers.model().attributeExists("recipe"));
     }
 
     @Test
     void handleImagePost() throws Exception{
 
-        MockMvc mockMvc = MockMvcBuilders.standaloneSetup(controller).build();
 
         MockMultipartFile multipartFile =
                 new MockMultipartFile("imagefile", "testing.txt", "text/plain",
@@ -138,6 +139,19 @@ class ImageControllerTest {
                 .andExpect(header().string("Location", "/recipe/1/show"));
 
         verify(imageService, times(1)).saveImageFile(anyLong(), any());
+
+
+    }
+
+    @Test
+    public void getImageBadRecipeID() throws Exception {
+
+
+
+        mockMvc.perform(get("/recipe/foo/recipeimage"))
+                .andExpect(status().isBadRequest())
+                .andExpect(view().name("400error"));
+
 
 
     }
