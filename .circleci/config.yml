@@ -38,9 +38,12 @@ jobs:
       # run tests!
       - run: mvn test
 
+workflows:
+  version: 2
+  build_and_test:
+    jobs:
+      - build
 
-
-# version: 2.1
 
   # orbs:
   # maven: circleci/maven@0.0.12
