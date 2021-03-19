@@ -11,5 +11,5 @@ import lombok.*;
 public class NotesCommand {
 
     private String recipeNotes;
-    private Long id;
+    private String id;
 }

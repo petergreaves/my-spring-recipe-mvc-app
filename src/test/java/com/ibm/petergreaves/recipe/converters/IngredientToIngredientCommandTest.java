@@ -10,7 +10,7 @@ import com.ibm.petergreaves.recipe.domain.UnitOfMeasure;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import javax.persistence.criteria.CriteriaBuilder;
+
 import java.math.BigDecimal;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -20,9 +20,9 @@ public class IngredientToIngredientCommandTest {
     IngredientToIngredientCommand ingredientConverter;
 
     IngredientCommand expected = null;
-    final Long idExpected = 44L;
-    final Long recipeID = 45499L;
-    final Long uomID = 394L;
+    final String idExpected = "44";
+    final String recipeID = "45499";
+    final String uomID = "394";
     final BigDecimal qty = BigDecimal.valueOf(3);
     final String desc = "flour";
     Recipe recipe;

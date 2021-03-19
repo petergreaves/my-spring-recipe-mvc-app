@@ -45,10 +45,10 @@ class RecipeRepositoryTestIT {
                 .build();
 
         ingredients.add(tomatoSauce);
-        Recipe recipe = Recipe.builder().ingredients(ingredients).id(33L).build();
+        Recipe recipe = Recipe.builder().ingredients(ingredients).id("33").build();
         ingredients.forEach(ing ->recipe.addIngredient(ing));
         recipeRepository.save(recipe);
-        Set<Ingredient> fromRepository = recipeRepository.findById(33L).get().getIngredients();
+        Set<Ingredient> fromRepository = recipeRepository.findById("33").get().getIngredients();
 
         assertEquals(ingredients.size(), fromRepository.size());
     }

@@ -18,7 +18,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.ui.Model;
 
-import javax.persistence.criteria.CriteriaBuilder;
+
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -63,10 +63,10 @@ class IngredientControllerTest {
         closeable = MockitoAnnotations.openMocks(this);
         controller = new IngredientController(ingredientService, recipeService, unitOfMeasureService);
         recipeCommand = new RecipeCommand();
-        recipeCommand.setId(99L);
+        recipeCommand.setId("99");
 
-        IngredientCommand i1 = IngredientCommand.builder().id(1L).description(ingredDesc1).build();
-        IngredientCommand i2 = IngredientCommand.builder().id(2L).description(ingredDesc2).build();
+        IngredientCommand i1 = IngredientCommand.builder().id("1").description(ingredDesc1).build();
+        IngredientCommand i2 = IngredientCommand.builder().id("2").description(ingredDesc2).build();
 
         recipeCommand.addIngredient(i1);
         recipeCommand.addIngredient(i2);
@@ -83,24 +83,24 @@ class IngredientControllerTest {
 
         ArgumentCaptor<RecipeCommand> argumentCaptor = ArgumentCaptor.forClass(RecipeCommand.class);
 
-        when(recipeService.findRecipeCommandByID(anyLong())).thenReturn(recipeCommand);
-        controller.getIngredientsForRecipeID(model, ""+9L);
+        when(recipeService.findRecipeCommandByID(anyString())).thenReturn(recipeCommand);
+        controller.getIngredientsForRecipeID(model, "9");
         verify(model, times(1)).addAttribute(eq("recipe"), argumentCaptor.capture());
 
         RecipeCommand commandFromController = argumentCaptor.getValue();
         Set<IngredientCommand> ingredients = commandFromController.getIngredients();
-        assertEquals(commandFromController.getId(),99L);
+        assertEquals(commandFromController.getId(),"99");
         assertEquals(ingredients.size(),2);
-        verify(recipeService, times(1)).findRecipeCommandByID(anyLong());
+        verify(recipeService, times(1)).findRecipeCommandByID(anyString());
 
     }
     @Test
     void deleteIngredientByRecipeIDAndIngredientID() throws Exception{
 
         MockMvc mockMvc = MockMvcBuilders.standaloneSetup(controller).build();
-        IngredientCommand i1 = IngredientCommand.builder().id(1L).description(ingredDesc1).recipeID(3L).build();
+        IngredientCommand i1 = IngredientCommand.builder().id("1").description(ingredDesc1).recipeID("3").build();
 
-        when(ingredientService.findByRecipeIdAndIngredientId(anyLong(),anyLong())).thenReturn(i1);
+        when(ingredientService.findByRecipeIdAndIngredientId(anyString(),anyString())).thenReturn(i1);
       //then
         mockMvc.perform(get("/recipe/2/ingredients/3/delete")
         )
@@ -116,15 +116,15 @@ class IngredientControllerTest {
 
         ArgumentCaptor<RecipeCommand> argumentCaptor = ArgumentCaptor.forClass(RecipeCommand.class);
 
-        when(recipeService.findRecipeCommandByID(anyLong())).thenReturn(recipeCommand);
-        controller.getIngredientsForRecipeID(model, ""+9L);
+        when(recipeService.findRecipeCommandByID(anyString())).thenReturn(recipeCommand);
+        controller.getIngredientsForRecipeID(model, "9");
         verify(model, times(1)).addAttribute(eq("recipe"), argumentCaptor.capture());
 
         RecipeCommand commandFromController = argumentCaptor.getValue();
         Set<IngredientCommand> ingredients = commandFromController.getIngredients();
-        IngredientCommand i1FromRecipe = ingredients.stream().filter(ic -> ic.getId()==1L).findFirst().get();
+        IngredientCommand i1FromRecipe = ingredients.stream().filter(ic -> ic.getId()=="1").findFirst().get();
         assertEquals(i1FromRecipe.getDescription(), ingredDesc1);
-        verify(recipeService, times(1)).findRecipeCommandByID(anyLong());
+        verify(recipeService, times(1)).findRecipeCommandByID(anyString());
 
     }
 
@@ -133,14 +133,14 @@ class IngredientControllerTest {
 
         ArgumentCaptor<RecipeCommand> argumentCaptor = ArgumentCaptor.forClass(RecipeCommand.class);
         recipeCommand.setIngredients(new HashSet<IngredientCommand>());
-        when(recipeService.findRecipeCommandByID(anyLong())).thenReturn(recipeCommand);
+        when(recipeService.findRecipeCommandByID(anyString())).thenReturn(recipeCommand);
         controller.getIngredientsForRecipeID(model, ""+9L);
         verify(model, times(1)).addAttribute(eq("recipe"), argumentCaptor.capture());
 
         RecipeCommand commandFromController = argumentCaptor.getValue();
 
         assertTrue(recipeCommand.getIngredients().size() == 0);
-        verify(recipeService, times(1)).findRecipeCommandByID(anyLong());
+        verify(recipeService, times(1)).findRecipeCommandByID(anyString());
 
     }
 
@@ -151,15 +151,15 @@ class IngredientControllerTest {
             mockMvc.perform(get("/recipe/99/ingredients"))
                     .andExpect(MockMvcResultMatchers.status().isOk())
                     .andExpect(MockMvcResultMatchers.view().name("recipe/ingredient/list"));
-             verify(recipeService, times(1)).findRecipeCommandByID(anyLong());
+             verify(recipeService, times(1)).findRecipeCommandByID(anyString());
 
     }
 
     @Test
     void getIngredientByIDForShowMVC() throws Exception{
 
-        IngredientCommand ingredientCommand = IngredientCommand.builder().id(2L).build();
-        when(ingredientService.findByRecipeIdAndIngredientId(anyLong(),anyLong())).thenReturn(ingredientCommand);
+        IngredientCommand ingredientCommand = IngredientCommand.builder().id("2").build();
+        when(ingredientService.findByRecipeIdAndIngredientId(anyString(),anyString())).thenReturn(ingredientCommand);
 
        // when(recipeService.findRecipeCommandByID(anyLong())).thenReturn(recipeCommand);
 
@@ -168,17 +168,15 @@ class IngredientControllerTest {
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.model().attributeExists("ingredient"))
                 .andExpect(MockMvcResultMatchers.view().name("recipe/ingredient/show"));
-        verify(ingredientService, times(1)).findByRecipeIdAndIngredientId(anyLong(),anyLong());
+        verify(ingredientService, times(1)).findByRecipeIdAndIngredientId(anyString(),anyString());
 
     }
 
     @Test
     void getIngredientByIDForUpdateMVC() throws Exception{
 
-        IngredientCommand ingredientCommand = IngredientCommand.builder().id(2L).build();
-        when(ingredientService.findByRecipeIdAndIngredientId(anyLong(),anyLong())).thenReturn(ingredientCommand);
-
-        // when(recipeService.findRecipeCommandByID(anyLong())).thenReturn(recipeCommand);
+        IngredientCommand ingredientCommand = IngredientCommand.builder().id("2").build();
+        when(ingredientService.findByRecipeIdAndIngredientId(anyString(),anyString())).thenReturn(ingredientCommand);
 
         MockMvc mockMvc = MockMvcBuilders.standaloneSetup(controller).build();
         mockMvc.perform(get("/recipe/99/ingredients/2/update"))
@@ -186,7 +184,7 @@ class IngredientControllerTest {
                 .andExpect(MockMvcResultMatchers.model().attributeExists("ingredient"))
                 .andExpect(MockMvcResultMatchers.model().attributeExists("uoms"))
                 .andExpect(MockMvcResultMatchers.view().name("recipe/ingredient/ingredientform"));
-        verify(ingredientService, times(1)).findByRecipeIdAndIngredientId(anyLong(),anyLong());
+        verify(ingredientService, times(1)).findByRecipeIdAndIngredientId(anyString(),anyString());
 
     }
 
@@ -200,12 +198,12 @@ class IngredientControllerTest {
         //remove so we get a 404
         recipeCommand.setIngredients(new HashSet<IngredientCommand>());
 
-        when(recipeService.findRecipeCommandByID(anyLong())).thenReturn(recipeCommand);
+        when(recipeService.findRecipeCommandByID(anyString())).thenReturn(recipeCommand);
 
         MockMvc mockMvc = MockMvcBuilders.standaloneSetup(controller).build();
         mockMvc.perform(get("/recipe/99/ingredients/2/show"))
                 .andExpect(MockMvcResultMatchers.status().is4xxClientError());
-        verify(recipeService, times(1)).findRecipeCommandByID(anyLong());
+        verify(recipeService, times(1)).findRecipeCommandByID(anyString());
 
     }
 

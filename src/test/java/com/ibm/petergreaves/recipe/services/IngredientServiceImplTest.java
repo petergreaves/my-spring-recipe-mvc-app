@@ -51,10 +51,10 @@ class IngredientServiceImplTest {
 
         Recipe recipe = new Recipe();
 
-        recipe.setId(9L);
-        Ingredient i1 = Ingredient.builder().id(1L).build();
-        Ingredient i2 = Ingredient.builder().id(2L).build();
-        Ingredient i3 = Ingredient.builder().id(3L).build();
+        recipe.setId("9");
+        Ingredient i1 = Ingredient.builder().id("1").build();
+        Ingredient i2 = Ingredient.builder().id("2").build();
+        Ingredient i3 = Ingredient.builder().id("3").build();
         Set<Ingredient> ingredientSet = new HashSet<>();
 
         ingredientSet.add(i1);
@@ -65,13 +65,13 @@ class IngredientServiceImplTest {
 
         Optional<Recipe> recipeOptional = Optional.of(recipe);
 
-        when(recipeRepository.findById(anyLong())).thenReturn(recipeOptional);
+        when(recipeRepository.findById(anyString())).thenReturn(recipeOptional);
 
-        IngredientCommand ic = ingredientService.findByRecipeIdAndIngredientId(9L, 1L);
+        IngredientCommand ic = ingredientService.findByRecipeIdAndIngredientId("9", "1");
         assertNotNull(ic);;
-        assertTrue(ic.getId()==1L);
-        assertTrue(ic.getRecipeID() == 9L);
-        verify(recipeRepository).findById(9L);
+        assertTrue(ic.getId().equals("1"));
+        assertEquals(ic.getRecipeID(),  "9");
+        verify(recipeRepository).findById("9");
 
 
     }
@@ -79,11 +79,11 @@ class IngredientServiceImplTest {
     @Test
     void doDeleteByRecipeIDAndIngredientID(){
 
-        Recipe recipe = Recipe.builder().id(33L).build();
+        Recipe recipe = Recipe.builder().id("33").build();
 
-        Ingredient i1 = Ingredient.builder().id(1L).build();
-        Ingredient i2 = Ingredient.builder().id(2L).build();
-        Ingredient i3 = Ingredient.builder().id(3L).build();
+        Ingredient i1 = Ingredient.builder().id("1").build();
+        Ingredient i2 = Ingredient.builder().id("2").build();
+        Ingredient i3 = Ingredient.builder().id("3").build();
         Set<Ingredient> ingredientSet = new HashSet<>();
 
         ingredientSet.add(i1);
@@ -94,13 +94,13 @@ class IngredientServiceImplTest {
 
         Optional<Recipe> recipeOptional = Optional.of(recipe);
 
-        when(recipeRepository.findById(anyLong())).thenReturn(recipeOptional);
+        when(recipeRepository.findById(anyString())).thenReturn(recipeOptional);
 
-        IngredientCommand command =IngredientCommand.builder().id(2L).recipeID(33L).build();
+        IngredientCommand command =IngredientCommand.builder().id("2").recipeID("33").build();
 
         ingredientService.removeIngredientCommand(command);
 
-        verify(recipeRepository, times(1)).findById(anyLong());
+        verify(recipeRepository, times(1)).findById(anyString());
         verify(recipeRepository, times(1)).save(any(Recipe.class));
 
     }

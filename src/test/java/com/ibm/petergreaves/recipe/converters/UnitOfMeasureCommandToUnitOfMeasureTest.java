@@ -13,7 +13,7 @@ class UnitOfMeasureCommandToUnitOfMeasureTest {
     UnitOfMeasureCommandToUnitOfMeasure uomConverter;
 
     UnitOfMeasure expected=null;
-    final Long idExpected=44L;
+    final String idExpected="44";
     final String desc = "description";
 
     @BeforeEach

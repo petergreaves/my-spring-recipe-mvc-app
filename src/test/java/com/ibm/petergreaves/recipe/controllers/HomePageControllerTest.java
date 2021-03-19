@@ -77,9 +77,9 @@ class HomePageControllerTest {
         //given
         Set<Recipe> recipeSet = new HashSet();
         Recipe r1 = new Recipe();
-        r1.setId(1L);
+        r1.setId("1");
         Recipe r2 = new Recipe();
-        r2.setId(2L);
+        r2.setId("2");
         recipeSet.add(r1);
         recipeSet.add(r2);
 

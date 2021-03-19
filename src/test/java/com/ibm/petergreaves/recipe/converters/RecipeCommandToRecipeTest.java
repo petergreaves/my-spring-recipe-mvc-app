@@ -9,7 +9,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.core.convert.converter.Converter;
 
-import javax.persistence.criteria.CriteriaBuilder;
+
 import java.io.DataInput;
 import java.math.BigDecimal;
 import java.util.HashSet;
@@ -19,7 +19,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class RecipeCommandToRecipeTest {
 
-    final Long recipeID = 303L;
+
+    final String recipeID="303";
     final String title = "Title for the recipe";
     final String url = "https://a.url.com";
     final String directions = "here are the directions";
@@ -31,7 +32,7 @@ class RecipeCommandToRecipeTest {
     final int servings =2;
     final String source = "from here";
     final String recipeNotesText = "here are the recipe notes";
-    final Long noteID = 390L;
+    final String noteID = "390";
 
 
     Recipe expected;
@@ -51,15 +52,15 @@ class RecipeCommandToRecipeTest {
 
         Set<Ingredient> ingredients = new HashSet<>();
         ingredients.add(
-                Ingredient.builder().id(1L).build());
+                Ingredient.builder().id("1").build());
         ingredients.add(
-                Ingredient.builder().id(2L).build());
+                Ingredient.builder().id("2").build());
 
         categories = new HashSet<>();
         categories.add(
-                Category.builder().id(44L).description("American").build());
+                Category.builder().id("44").description("American").build());
         categories.add(
-                Category.builder().id(44L).description("Mexican").build());
+                Category.builder().id("44").description("Mexican").build());
 
         expected = Recipe.builder()
                 .id(recipeID)
@@ -94,22 +95,23 @@ class RecipeCommandToRecipeTest {
 
     }
 
-
     @Test
     void convert() {
 
 
         Set<CategoryCommand> categories = new HashSet<>();
-        categories.add(
-                CategoryCommand.builder().id(44L).description("American").build());
-        categories.add(
-                CategoryCommand.builder().id(44L).description("Mexican").build());
-
         Set<IngredientCommand> ingredients = new HashSet<>();
         ingredients.add(
-                IngredientCommand.builder().id(1L).build());
+                IngredientCommand.builder().id("1").build());
         ingredients.add(
-                IngredientCommand.builder().id(2L).build());
+                IngredientCommand.builder().id("2").build());
+
+        categories = new HashSet<>();
+        categories.add(
+                CategoryCommand.builder().id("44").description("American").build());
+        categories.add(
+                CategoryCommand.builder().id("44").description("Mexican").build());
+
 
         RecipeCommand recipeCommand = RecipeCommand.builder()
                 .id(recipeID)

@@ -14,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class RecipeToRecipeCommandTest {
 
-    final Long recipeID = 303L;
+    final String recipeID = "303";
     final String title = "Title for the recipe";
     final String url = "https://a.url.com";
     final String directions = "here are the directions";
@@ -26,7 +26,7 @@ class RecipeToRecipeCommandTest {
     final int servings =2;
     final String source = "from here";
     final String recipeNotesText = "here are the recipe notes";
-    final Long noteID = 390L;
+    final String noteID = "390";
 
 
     RecipeCommand expected;
@@ -47,15 +47,15 @@ class RecipeToRecipeCommandTest {
 
         Set<IngredientCommand> ingredients = new HashSet<>();
         ingredients.add(
-                IngredientCommand.builder().id(1L).build());
+                IngredientCommand.builder().id("1").build());
         ingredients.add(
-                IngredientCommand.builder().id(2L).build());
+                IngredientCommand.builder().id("2").build());
 
         Set<CategoryCommand>categories = new HashSet<>();
         categories.add(
-                CategoryCommand.builder().id(44L).description("American").build());
+                CategoryCommand.builder().id("44").description("American").build());
         categories.add(
-                CategoryCommand.builder().id(44L).description("Mexican").build());
+                CategoryCommand.builder().id("44").description("Mexican").build());
 
         expected = RecipeCommand.builder()
                 .id(recipeID)

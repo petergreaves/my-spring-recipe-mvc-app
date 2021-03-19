@@ -46,9 +46,9 @@ public class UnitOfMeasureServiceImplTest {
     @Test
     void findAllUnitOfMeasures(){
 
-     UnitOfMeasure cup = UnitOfMeasure.builder().id(1L).description("cup").build();
-     UnitOfMeasure each = UnitOfMeasure.builder().id(2L).description("each").build();
-     UnitOfMeasure spoon = UnitOfMeasure.builder().id(3L).description("spoon").build();
+     UnitOfMeasure cup = UnitOfMeasure.builder().id("1").description("cup").build();
+     UnitOfMeasure each = UnitOfMeasure.builder().id("2").description("each").build();
+     UnitOfMeasure spoon = UnitOfMeasure.builder().id("3").description("spoon").build();
 
      uoms.add(cup);
      uoms.add(each);

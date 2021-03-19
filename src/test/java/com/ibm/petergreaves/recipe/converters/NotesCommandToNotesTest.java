@@ -15,7 +15,7 @@ class NotesCommandToNotesTest {
     NotesCommandToNotes notesConverter;
 
     Notes expected=null;
-    final Long idExpected=44L;
+    final String idExpected="44";
 
     final String notes = "some recipe notes";
 

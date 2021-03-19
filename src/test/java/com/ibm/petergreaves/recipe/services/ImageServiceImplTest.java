@@ -54,13 +54,13 @@ public class ImageServiceImplTest {
 
         MultipartFile multipartFile = new MockMultipartFile("imagefile", "testing.txt", "text/plain",
                 "Spring Framework Guru".getBytes());
-        Recipe recipe = Recipe.builder().id(33L).build();
+        Recipe recipe = Recipe.builder().id("33").build();
 
-        when(recipeRepository.findById(anyLong())).thenReturn(Optional.of(recipe));
+        when(recipeRepository.findById(anyString())).thenReturn(Optional.of(recipe));
 
         ArgumentCaptor<Recipe> captor = ArgumentCaptor.forClass(Recipe.class);
 
-        service.saveImageFile(33L, multipartFile);
+        service.saveImageFile("33", multipartFile);
         verify(recipeRepository, times(1)).save(captor.capture());
 
         Recipe savedRecipe = captor.getValue();

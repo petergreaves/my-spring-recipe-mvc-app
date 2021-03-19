@@ -7,7 +7,7 @@ import com.ibm.petergreaves.recipe.commands.NotesCommand;
 import com.ibm.petergreaves.recipe.commands.RecipeCommand;
 import com.ibm.petergreaves.recipe.domain.Category;
 import com.ibm.petergreaves.recipe.domain.Recipe;
-import com.sun.istack.Nullable;
+
 import lombok.Synchronized;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
@@ -18,7 +18,7 @@ import java.util.Set;
 @Component
 public class RecipeCommandToRecipe implements Converter <RecipeCommand, Recipe> {
 
-    @Nullable
+
     @Synchronized
     @Override
     public Recipe convert(RecipeCommand recipeCommand) {

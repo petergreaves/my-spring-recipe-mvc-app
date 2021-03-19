@@ -1,8 +1,10 @@
 package com.ibm.petergreaves.recipe.domain;
 
 import lombok.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 
-import javax.persistence.*;
+
 import java.math.BigDecimal;
 
 @Data
@@ -10,19 +12,18 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(exclude = {"recipe"})
-@Entity
 public class Ingredient {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
 
-    @ManyToOne
+    @Id
+    private String id;
+
+
     private Recipe recipe;
     private String description;
     private BigDecimal quantity;
 
-    @OneToOne(fetch = FetchType.EAGER)
+    @DBRef
     private UnitOfMeasure uom;
 
 

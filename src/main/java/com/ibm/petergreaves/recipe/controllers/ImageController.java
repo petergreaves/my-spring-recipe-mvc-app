@@ -41,8 +41,8 @@ public class ImageController {
     @GetMapping("/recipe/{recipeID}/imageform")
     public String getImageForm(Model model, @PathVariable String recipeID) {
 
-        Long id = Long.valueOf(recipeID);
-        RecipeCommand command = recipeService.findRecipeCommandByID(id);
+
+        RecipeCommand command = recipeService.findRecipeCommandByID(recipeID);
         if (command == null) {
             throw new ResponseStatusException(
                     HttpStatus.NOT_FOUND, "Recipe not found with id " + recipeID
@@ -57,7 +57,7 @@ public class ImageController {
     @GetMapping("/recipe/{recipeID}/recipeimage")
     public void getImageStream(@PathVariable String recipeID, HttpServletResponse response) throws IOException {
 
-        RecipeCommand command = recipeService.findRecipeCommandByID(Long.valueOf(recipeID));
+        RecipeCommand command = recipeService.findRecipeCommandByID(recipeID);
         if (command==null){
             throw new ResponseStatusException(
                     HttpStatus.NOT_FOUND, "Recipe not found with id " +recipeID
@@ -83,7 +83,7 @@ public class ImageController {
     @PostMapping("recipe/{id}/image")
     public String handleImagePost(@PathVariable String id, @RequestParam("imagefile") MultipartFile file) {
 
-        service.saveImageFile(Long.valueOf(id), file);
+        service.saveImageFile(id, file);
 
         return "redirect:/recipe/" + id + "/show";
     }

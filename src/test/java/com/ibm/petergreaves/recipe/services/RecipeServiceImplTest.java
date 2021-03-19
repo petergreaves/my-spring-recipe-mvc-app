@@ -4,9 +4,6 @@ import com.ibm.petergreaves.recipe.converters.RecipeCommandToRecipe;
 import com.ibm.petergreaves.recipe.converters.RecipeToRecipeCommand;
 import com.ibm.petergreaves.recipe.domain.Recipe;
 import com.ibm.petergreaves.recipe.repositories.RecipeRepository;
-import lombok.Setter;
-import org.aspectj.lang.annotation.After;
-import org.aspectj.lang.annotation.Before;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
@@ -47,9 +44,9 @@ class RecipeServiceImplTest {
     @Test
     void getRecipes() {
         Recipe rec1 = new Recipe();
-        rec1.setId(22L);
+        rec1.setId("22");
         Recipe rec2 = new Recipe();
-        rec2.setId(23L);
+        rec2.setId("23");
 
         Set<Recipe> recipes= new HashSet<>();
         recipes.add(rec1);
@@ -68,7 +65,7 @@ class RecipeServiceImplTest {
     void getRecipeByID(){
         Recipe rec1 = new Recipe();
 
-        Long id = 2L;
+        String id = "2";
         rec1.setId(id);
 
         final ArgumentCaptor<Recipe> captor = ArgumentCaptor.forClass(Recipe.class);
@@ -78,24 +75,24 @@ class RecipeServiceImplTest {
         Recipe recipeReturned = recipeService.getRecipeByID(id);
 
         assertEquals(recipeReturned.getId(), rec1.getId());
-        verify(recipeRepository, times(1)).findById(anyLong());
+        verify(recipeRepository, times(1)).findById(anyString());
     }
 
     @Test
     void getRecipeByIDWithNotFoundThrowException(){
 
-        Long id = 1002L;
+        String id = "1002";
 
         when(recipeRepository.findById(id)).thenReturn(Optional.empty());
         assertThrows(RuntimeException.class,() -> { recipeService.getRecipeByID(id);} );
-        verify(recipeRepository, times(1)).findById(anyLong());
+        verify(recipeRepository, times(1)).findById(anyString());
     }
 
     @Test
     void deleteRecipeByID(){
 
         //given
-        Long id = 2L;
+        String id = "2";
 
         //when
         recipeService.deleteByID(id);

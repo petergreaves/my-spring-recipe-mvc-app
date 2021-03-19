@@ -2,7 +2,7 @@ package com.ibm.petergreaves.recipe.converters;
 
 import com.ibm.petergreaves.recipe.commands.NotesCommand;
 import com.ibm.petergreaves.recipe.domain.Notes;
-import com.sun.istack.Nullable;
+
 import lombok.Synchronized;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
@@ -12,7 +12,6 @@ public class NotesCommandToNotes implements Converter<NotesCommand, Notes> {
 
 
     @Override
-    @Nullable
     @Synchronized
     public Notes convert(NotesCommand notesCommand) {
         if (notesCommand == null){

@@ -12,7 +12,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 
-import javax.persistence.criteria.CriteriaBuilder;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
@@ -35,7 +34,7 @@ public class IngredientServiceImpl implements IngredientService {
     }
 
     @Override
-    public IngredientCommand findByRecipeIdAndIngredientId(Long recipeId, Long ingredientId) {
+    public IngredientCommand findByRecipeIdAndIngredientId(String recipeId, String ingredientId) {
 
         Optional<Recipe> recipeOptional = recipeRepository.findById(recipeId);
 
@@ -131,9 +130,9 @@ public class IngredientServiceImpl implements IngredientService {
 
     public void removeIngredientCommand(IngredientCommand command) {
 
-        Long recipeID = command.getRecipeID();
+        String recipeID = command.getRecipeID();
         ;
-        Long ingredientID = command.getId();
+        String ingredientID = command.getId();
 
         // find the recipe to which this Ingred belongs
 

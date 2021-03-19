@@ -10,5 +10,5 @@ import lombok.*;
 public class CategoryCommand {
 
     private String description;
-    private Long id;
+    private String id;
 }

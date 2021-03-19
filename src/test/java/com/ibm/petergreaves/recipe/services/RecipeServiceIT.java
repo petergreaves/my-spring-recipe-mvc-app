@@ -45,7 +45,7 @@ public class RecipeServiceIT {
         Iterable<Recipe> allRecipes = recipeRepository.findAll();
 
         Recipe testRecipe =allRecipes.iterator().next();
-        Long testRecipeID = testRecipe.getId();
+        String testRecipeID = testRecipe.getId();
         RecipeCommand command = recipeToRecipeCommand.convert(testRecipe);
 
         RecipeCommand savedCommand=recipeService.saveRecipeCommand(command);

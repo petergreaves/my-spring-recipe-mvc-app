@@ -2,10 +2,11 @@ package com.ibm.petergreaves.recipe.controllers;
 
 import com.ibm.petergreaves.recipe.commands.IngredientCommand;
 import com.ibm.petergreaves.recipe.commands.RecipeCommand;
+import com.ibm.petergreaves.recipe.exceptions.NotFoundException;
 import com.ibm.petergreaves.recipe.services.ImageService;
 import com.ibm.petergreaves.recipe.services.IngredientService;
 import com.ibm.petergreaves.recipe.services.RecipeService;
-import lombok.extern.slf4j.Slf4j;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -71,19 +72,19 @@ class ImageControllerTest {
 
         ArgumentCaptor<String> argumentCaptor = ArgumentCaptor.forClass(String.class);
 
-        when(recipeService.findRecipeCommandByID(anyLong())).thenReturn(RecipeCommand.builder().id(1L).build());
-        Long recipeID = 1L;
+        when(recipeService.findRecipeCommandByID(anyString())).thenReturn(RecipeCommand.builder().id("1").build());
+        String recipeID = "1";
         String location=controller.getImageForm(model, recipeID+"");
         verify(model, times(1)).addAttribute(eq("recipe"), argumentCaptor.capture());
-        verify(recipeService, times(1)).findRecipeCommandByID(anyLong());
-        verify(imageService, times(0)).saveImageFile(anyLong(), any());
+        verify(recipeService, times(1)).findRecipeCommandByID(anyString());
+        verify(imageService, times(0)).saveImageFile(anyString(), any());
 
     }
     @Test
     void getImageForm404MVC() throws Exception {
 
 
-        when(recipeService.findRecipeCommandByID(anyLong())).thenReturn(null);
+        when(recipeService.findRecipeCommandByID(anyString())).thenReturn(null);
 
         mockMvc.perform(get("/recipe/1/imageform"))
                 .andExpect(status().is4xxClientError());
@@ -104,8 +105,8 @@ class ImageControllerTest {
             bytesObject[k++] = b;
         }
 
-        RecipeCommand command = RecipeCommand.builder().id(33L).image(bytesObject).build();
-        when(recipeService.findRecipeCommandByID(anyLong())).thenReturn(command);
+        RecipeCommand command = RecipeCommand.builder().id("33").image(bytesObject).build();
+        when(recipeService.findRecipeCommandByID(anyString())).thenReturn(command);
 
         MockHttpServletResponse resp=mockMvc.perform(get("/recipe/1/recipeimage"))
                 .andExpect(status().isOk())
@@ -118,7 +119,7 @@ class ImageControllerTest {
     @Test
     void getImageFormMVC() throws Exception{
 
-        when(recipeService.findRecipeCommandByID(anyLong())).thenReturn(RecipeCommand.builder().id(1L).build());
+        when(recipeService.findRecipeCommandByID(anyString())).thenReturn(RecipeCommand.builder().id("1").build());
 
         mockMvc.perform(get("/recipe/1/imageform"))
                 .andExpect(status().isOk())
@@ -138,7 +139,7 @@ class ImageControllerTest {
                 .andExpect(status().is3xxRedirection())
                 .andExpect(header().string("Location", "/recipe/1/show"));
 
-        verify(imageService, times(1)).saveImageFile(anyLong(), any());
+        verify(imageService, times(1)).saveImageFile(anyString(), any());
 
 
     }
@@ -146,11 +147,13 @@ class ImageControllerTest {
     @Test
     public void getImageBadRecipeID() throws Exception {
 
+        when(recipeService.getRecipeByID(anyString())).thenThrow(NotFoundException.class);
+
 
 
         mockMvc.perform(get("/recipe/foo/recipeimage"))
                 .andExpect(status().isBadRequest())
-                .andExpect(view().name("400error"));
+                .andExpect(view().name("404error"));
 
 
 

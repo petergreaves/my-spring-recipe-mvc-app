@@ -2,7 +2,6 @@ package com.ibm.petergreaves.recipe.domain;
 
 import org.junit.jupiter.api.Test;
 
-import javax.persistence.criteria.CriteriaBuilder;
 import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.Set;
@@ -15,7 +14,7 @@ class RecipeTest {
     void ingredientsAreSetByBuilder(){
 
     UnitOfMeasure cupUom = new UnitOfMeasure();
-    cupUom.setId(12L);
+    cupUom.setId("12");
     cupUom.setDescription("Cup");
 
         Set<Ingredient> ingredients = new HashSet<>();

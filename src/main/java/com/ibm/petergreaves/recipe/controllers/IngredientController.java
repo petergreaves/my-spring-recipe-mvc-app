@@ -31,7 +31,7 @@ public class IngredientController {
     public String getIngredientsForRecipeID(Model model, @PathVariable String recipeID) {
         log.debug("Getting ingredients for recipe : " + recipeID);
 
-        RecipeCommand recipe = recipeService.findRecipeCommandByID(Long.valueOf(recipeID));
+        RecipeCommand recipe = recipeService.findRecipeCommandByID(recipeID);
         model.addAttribute("recipe", recipe);
 
         return "recipe/ingredient/list";
@@ -45,8 +45,8 @@ public class IngredientController {
 
         final String view = "recipe/ingredient/show";
 
-        final Long recipeID = Long.parseLong(pathVarsMap.get("recipeID"));
-        final Long ingredID = Long.parseLong(pathVarsMap.get("ingredientID"));
+        final String recipeID = pathVarsMap.get("recipeID");
+        final String ingredID = pathVarsMap.get("ingredientID");
 
         log.debug("Getting ingredient for recipe id : " + recipeID + ", ingredient id : " + ingredID + " for show");
         IngredientCommand ingredientCommand =
@@ -64,8 +64,8 @@ public class IngredientController {
 
         final String view = "recipe/ingredient/ingredientform";
 
-        final Long recipeID = Long.parseLong(pathVarsMap.get("recipeID"));
-        final Long ingredID = Long.parseLong(pathVarsMap.get("ingredientID"));
+        final String recipeID = pathVarsMap.get("recipeID");
+        final String ingredID = pathVarsMap.get("ingredientID");
 
         log.debug("Getting ingredient for recipe id : " + recipeID + ", ingredient id : " + ingredID + " for update");
         IngredientCommand ingredientCommand =
@@ -91,8 +91,8 @@ public class IngredientController {
     @GetMapping("/recipe/{recipeID}/ingredients/{ingredientID}/delete")
     public String doDeleteIngredient(Model model, @PathVariable Map<String, String> paramMap) {
 
-        Long recipeID = Long.parseLong(paramMap.get("recipeID"));
-        Long ingredientID = Long.parseLong(paramMap.get("ingredientID"));
+        String recipeID = paramMap.get("recipeID");
+        String ingredientID = paramMap.get("ingredientID");
 
         log.debug("Got request to remove ingredient id : " + ingredientID + " from recipe id : " + recipeID);
 
@@ -103,7 +103,7 @@ public class IngredientController {
 
         ingredientService.removeIngredientCommand(commandToRemove);
 
-        RecipeCommand recipe = recipeService.findRecipeCommandByID(Long.valueOf(recipeID));
+        RecipeCommand recipe = recipeService.findRecipeCommandByID(recipeID);
         model.addAttribute("recipe", recipe);
 
 
@@ -115,7 +115,7 @@ public class IngredientController {
     @GetMapping("/recipe/{recipeID}/ingredient/new")
     public String newRecipeIngredient(Model model, @PathVariable String recipeID) {
 
-        RecipeCommand recipeCommand = recipeService.findRecipeCommandByID(Long.valueOf(recipeID));
+        RecipeCommand recipeCommand = recipeService.findRecipeCommandByID(recipeID);
         // assume for now we have a recipe, but we should execptn if null
 
         IngredientCommand ingredientCommand = IngredientCommand.builder().build();
