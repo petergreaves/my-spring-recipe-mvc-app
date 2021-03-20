@@ -26,68 +26,118 @@ import java.util.*;
 @Profile("default")
 public class RecipeBootstrap implements ApplicationListener<ContextRefreshedEvent> {
 
-private UnitOfMeasureRepository uomRepository;
+private UnitOfMeasureRepository unitOfMeasureRepository;
 private CategoryRepository categoryRepository;
 private RecipeRepository recipeRepository;
 
-    @Autowired
-    ResourceLoader resourceLoader;
 
-    public RecipeBootstrap(UnitOfMeasureRepository uomRepository, CategoryRepository categoryRepository, RecipeRepository recipeRepository) {
-        this.uomRepository = uomRepository;
+    public RecipeBootstrap(UnitOfMeasureRepository unitOfMeasureRepository, CategoryRepository categoryRepository, RecipeRepository recipeRepository) {
+        this.unitOfMeasureRepository = unitOfMeasureRepository;
         this.categoryRepository = categoryRepository;
         this.recipeRepository = recipeRepository;
     }
 
 
-    public List<Recipe> getRecipes()  {
+    private void loadCategories(){
+        Category cat1 = new Category();
+        cat1.setDescription("American");
+        categoryRepository.save(cat1);
+
+        Category cat2 = new Category();
+        cat2.setDescription("Italian");
+        categoryRepository.save(cat2);
+
+        Category cat3 = new Category();
+        cat3.setDescription("Mexican");
+        categoryRepository.save(cat3);
+
+        Category cat4 = new Category();
+        cat4.setDescription("Fast Food");
+        categoryRepository.save(cat4);
+    }
+
+    private void loadUom(){
+        UnitOfMeasure uom1 = new UnitOfMeasure();
+        uom1.setDescription("Teaspoon");
+        unitOfMeasureRepository.save(uom1);
+
+        UnitOfMeasure uom2 = new UnitOfMeasure();
+        uom2.setDescription("Tablespoon");
+        unitOfMeasureRepository.save(uom2);
+
+        UnitOfMeasure uom3 = new UnitOfMeasure();
+        uom3.setDescription("Cup");
+        unitOfMeasureRepository.save(uom3);
+
+        UnitOfMeasure uom4 = new UnitOfMeasure();
+        uom4.setDescription("Pinch");
+        unitOfMeasureRepository.save(uom4);
+
+        UnitOfMeasure uom5 = new UnitOfMeasure();
+        uom5.setDescription("Ounce");
+        unitOfMeasureRepository.save(uom5);
+
+        UnitOfMeasure uom6 = new UnitOfMeasure();
+        uom6.setDescription("Each");
+        unitOfMeasureRepository.save(uom6);
+
+        UnitOfMeasure uom7 = new UnitOfMeasure();
+        uom7.setDescription("Pint");
+        unitOfMeasureRepository.save(uom7);
+
+        UnitOfMeasure uom8 = new UnitOfMeasure();
+        uom8.setDescription("Dash");
+        unitOfMeasureRepository.save(uom8);
+    }
+
+
+    public List<Recipe> getRecipes() {
 
 
         // OUMs
 
-        Optional<UnitOfMeasure> eachUom = uomRepository.findByDescription("Each");
-        if (!eachUom.isPresent()){
+        Optional<UnitOfMeasure> eachUom = unitOfMeasureRepository.findByDescription("Each");
+        if (!eachUom.isPresent()) {
             throw new RuntimeException("Each unit of measure not found");
         }
 
-        Optional<UnitOfMeasure> cupUom = uomRepository.findByDescription("Cup");
-        if (!cupUom.isPresent()){
+        Optional<UnitOfMeasure> cupUom = unitOfMeasureRepository.findByDescription("Cup");
+        if (!cupUom.isPresent()) {
             throw new RuntimeException("Cup unit of measure not found");
         }
 
 
-        Optional<UnitOfMeasure> ounceUom = uomRepository.findByDescription("Ounce");
-        if (!ounceUom.isPresent()){
+        Optional<UnitOfMeasure> ounceUom = unitOfMeasureRepository.findByDescription("Ounce");
+        if (!ounceUom.isPresent()) {
             throw new RuntimeException("Ounce unit of measure not found");
         }
 
 
-        Optional<UnitOfMeasure> tablespoonUom = uomRepository.findByDescription("Tablespoon");
-        if (!tablespoonUom.isPresent()){
+        Optional<UnitOfMeasure> tablespoonUom = unitOfMeasureRepository.findByDescription("Tablespoon");
+        if (!tablespoonUom.isPresent()) {
             throw new RuntimeException("Tablespoon unit of measure not found");
         }
 
-        Optional<UnitOfMeasure> teaspoonUom = uomRepository.findByDescription("Teaspoon");
-        if (!teaspoonUom.isPresent()){
+        Optional<UnitOfMeasure> teaspoonUom = unitOfMeasureRepository.findByDescription("Teaspoon");
+        if (!teaspoonUom.isPresent()) {
             throw new RuntimeException("Teaspoon unit of measure not found");
         }
 
 
         Optional<Category> catAmerican = categoryRepository.findByDescription("American");
-        if (!catAmerican.isPresent()){
+        if (!catAmerican.isPresent()) {
             throw new RuntimeException("American category not found");
         }
 
         Optional<Category> catMexican = categoryRepository.findByDescription("Mexican");
-        if (!catMexican.isPresent()){
+        if (!catMexican.isPresent()) {
             throw new RuntimeException("Mexican category not found");
         }
 
 
-
         List<Recipe> retval = new ArrayList<>();
 
-      //  Recipe guacamole = new Recipe();
+        //  Recipe guacamole = new Recipe();
 
         Notes guacNotes = new Notes();
         guacNotes.setRecipeNotes("Here are the notes for the guacamole recipe\n\nLovely!!");
@@ -125,7 +175,6 @@ private RecipeRepository recipeRepository;
                 .build();
 
 
-
         Set<Category> guacCats = new HashSet<>();
         guacCats.add(catMexican.get());
         guacCats.add(catAmerican.get());
@@ -139,7 +188,7 @@ private RecipeRepository recipeRepository;
         guacIngreds.add(eggs);
         guacIngreds.add(flour);
 
-        Recipe guacamole= Recipe.builder()
+        Recipe guacamole = Recipe.builder()
                 .title("Best ever guacamole")
                 .cookTime(60)
                 .prepTime(25)
@@ -154,7 +203,7 @@ private RecipeRepository recipeRepository;
                 .categories(guacCats)
                 .build();
 
-        guacamole.getIngredients().forEach(ing ->ing.setRecipe(guacamole));
+       // guacamole.getIngredients().forEach(ing -> ing.setRecipe(guacamole));
 
         retval.add(guacamole);
 
@@ -167,7 +216,7 @@ private RecipeRepository recipeRepository;
         pizzaIngredients.add(tomatoSauce);
 
 
-        Recipe pizza= Recipe.builder()
+        Recipe pizza = Recipe.builder()
                 .title("Pizza")
                 .directions("Make a pizza....")
                 .cookTime(30)
@@ -185,48 +234,17 @@ private RecipeRepository recipeRepository;
         pizza.addIngredient(tomatoSauce);
         pizza.addIngredient(mozzarella);
 
-        // load  images
-
-        try{
-
-            Resource resource = resourceLoader.getResource("classpath:static/images/Eq_it-na_pizza-margherita_sep2005_sml.jpg");
-            InputStream input = resource.getInputStream();
-            File file = resource.getFile();
-
-            final byte[] pizzaImageAsPrim = Files.readAllBytes(Paths.get(file.getPath()));
-
-            Byte[] bytes = new Byte[pizzaImageAsPrim.length];
-            Arrays.setAll(bytes, n -> pizzaImageAsPrim[n]);
-            pizza.setImage(bytes);
-
-            bytes = null;
-            resource = resourceLoader.getResource("classpath:static/images/guacamole400x400.jpg");
-            input = resource.getInputStream();
-            file = resource.getFile();
-
-            final byte[] guacImageAsPrim = Files.readAllBytes(Paths.get(file.getPath()));
-
-            bytes = new Byte[guacImageAsPrim.length];
-            Arrays.setAll(bytes, n -> guacImageAsPrim[n]);
-            guacamole.setImage(bytes);
-
-
-
-
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
         retval.add(pizza);
-      //  System.out.println("######" +pizza.getIngredients());
 
-        log.debug("Created recipe : "+ guacamole.getTitle());
         return retval;
+
     }
 
     @Override
     public void onApplicationEvent(ContextRefreshedEvent contextRefreshedEvent) {
+
+        loadCategories();
+        loadUom();
         recipeRepository.saveAll(getRecipes());
 
     }

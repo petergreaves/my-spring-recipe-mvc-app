@@ -7,7 +7,9 @@ import com.ibm.petergreaves.recipe.commands.RecipeCommand;
 import com.ibm.petergreaves.recipe.domain.*;
 import org.junit.jupiter.api.BeforeEach;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -45,13 +47,13 @@ class RecipeToRecipeCommandTest {
         recipeNotes.setId(noteID);
         recipeNotes.setRecipeNotes(recipeNotesText);
 
-        Set<IngredientCommand> ingredients = new HashSet<>();
+        List<IngredientCommand> ingredients = new ArrayList<>();
         ingredients.add(
                 IngredientCommand.builder().id("1").build());
         ingredients.add(
                 IngredientCommand.builder().id("2").build());
 
-        Set<CategoryCommand>categories = new HashSet<>();
+        List<CategoryCommand>categories = new ArrayList<>();
         categories.add(
                 CategoryCommand.builder().id("44").description("American").build());
         categories.add(

@@ -13,6 +13,7 @@ import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Component
@@ -42,22 +43,22 @@ public class RecipeCommandToRecipe implements Converter <RecipeCommand, Recipe> 
                 .description(recipeCommand.getDescription())
                 .build();
 
-        Set<IngredientCommand> ingredientCommandSet = recipeCommand.getIngredients();
+        List<IngredientCommand> ingredientCommandList = recipeCommand.getIngredients();
 
-        if (ingredientCommandSet!=null){
-
+        if (ingredientCommandList!=null){
             IngredientCommandToIngredient converter = new IngredientCommandToIngredient();
-           ingredientCommandSet.forEach(i -> recipe.addIngredient(converter.convert(i)));
+
+           ingredientCommandList.forEach(i -> recipe.addIngredient(converter.convert(i)));
 
         }
 
-        Set<CategoryCommand> categoryCommandSet = recipeCommand.getCategories();
+        List<CategoryCommand> categoryCommandlist = recipeCommand.getCategories();
 
-        if (categoryCommandSet!=null){
+        if (categoryCommandlist!=null){
 
             CategoryCommandToCategory converter = new CategoryCommandToCategory();
             Set<Category> cats = new HashSet<>();
-            categoryCommandSet.forEach(c-> cats.add(converter.convert(c)));
+            categoryCommandlist.forEach(c-> cats.add(converter.convert(c)));
 
             recipe.setCategories(cats);
         }

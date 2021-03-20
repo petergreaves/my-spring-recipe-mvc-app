@@ -12,7 +12,9 @@ import org.springframework.core.convert.converter.Converter;
 
 import java.io.DataInput;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -99,14 +101,14 @@ class RecipeCommandToRecipeTest {
     void convert() {
 
 
-        Set<CategoryCommand> categories = new HashSet<>();
-        Set<IngredientCommand> ingredients = new HashSet<>();
+        List<CategoryCommand> categories = new ArrayList<>();
+        List<IngredientCommand> ingredients = new ArrayList<>();
         ingredients.add(
                 IngredientCommand.builder().id("1").build());
         ingredients.add(
                 IngredientCommand.builder().id("2").build());
 
-        categories = new HashSet<>();
+
         categories.add(
                 CategoryCommand.builder().id("44").description("American").build());
         categories.add(

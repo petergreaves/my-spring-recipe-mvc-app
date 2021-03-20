@@ -6,6 +6,7 @@ import org.springframework.data.mongodb.core.mapping.DBRef;
 
 
 import java.math.BigDecimal;
+import java.util.UUID;
 
 @Data
 @Builder
@@ -15,9 +16,8 @@ import java.math.BigDecimal;
 public class Ingredient {
 
 
-    @Id
-    private String id;
-
+    @Builder.Default
+    private String id = UUID.randomUUID().toString();
 
     private Recipe recipe;
     private String description;

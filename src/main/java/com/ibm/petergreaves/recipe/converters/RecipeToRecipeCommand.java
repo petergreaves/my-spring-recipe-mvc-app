@@ -11,7 +11,9 @@ import lombok.Synchronized;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Component
@@ -53,7 +55,7 @@ public class RecipeToRecipeCommand implements Converter<Recipe, RecipeCommand> {
         if (categorySet!=null){
 
             CategoryToCategoryCommand converter = new CategoryToCategoryCommand();
-            Set<CategoryCommand> cats = new HashSet<>();
+            List<CategoryCommand> cats = new ArrayList<>();
             categorySet.forEach(c-> cats.add(converter.convert(c)));
 
             recipeCommand.setCategories(cats);

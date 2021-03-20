@@ -70,6 +70,7 @@ public class IngredientController {
         log.debug("Getting ingredient for recipe id : " + recipeID + ", ingredient id : " + ingredID + " for update");
         IngredientCommand ingredientCommand =
                 ingredientService.findByRecipeIdAndIngredientId(recipeID, ingredID);
+  //      ingredientCommand.setRecipeID(recipeID);
         model.addAttribute("ingredient", ingredientCommand);
         model.addAttribute("uoms", unitOfMeasureService.listUnitOfMeasures());
 

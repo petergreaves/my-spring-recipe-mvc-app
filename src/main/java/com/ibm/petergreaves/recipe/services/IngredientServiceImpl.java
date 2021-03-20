@@ -12,7 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 
-import java.util.HashSet;
+
 import java.util.Optional;
 import java.util.Set;
 
@@ -48,14 +48,17 @@ public class IngredientServiceImpl implements IngredientService {
 
         Optional<IngredientCommand> retval = ingredients.stream()
                 .filter(in -> in.getId().equals(ingredientId))
-                .map(in -> ingredientToIngredientCommand.convert(in))
+                .map(ingredientToIngredientCommand::convert)
                 .findFirst();
         if (!retval.isPresent()) {
 
             log.error("No such ingredient with id " + ingredientId);
             //todo error handling
         }
+        else{
 
+            retval.get().setRecipeID(recipeId);
+        }
         return retval.get();
     }
 
@@ -121,7 +124,10 @@ public class IngredientServiceImpl implements IngredientService {
 
             }
             // to do check for fail
-            return ingredientToIngredientCommand.convert(savedIngredientOptional.get());
+
+            IngredientCommand ingredientCommand = ingredientToIngredientCommand.convert(savedIngredientOptional.get());
+            ingredientCommand.setRecipeID(recipe.getId());
+            return ingredientCommand;
         }
 
     }
@@ -130,8 +136,6 @@ public class IngredientServiceImpl implements IngredientService {
 
     public void removeIngredientCommand(IngredientCommand command) {
 
-        String recipeID = command.getRecipeID();
-        ;
         String ingredientID = command.getId();
 
         // find the recipe to which this Ingred belongs
