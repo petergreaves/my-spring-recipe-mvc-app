@@ -19,10 +19,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.ui.Model;
 
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -88,7 +85,7 @@ class IngredientControllerTest {
         verify(model, times(1)).addAttribute(eq("recipe"), argumentCaptor.capture());
 
         RecipeCommand commandFromController = argumentCaptor.getValue();
-        Set<IngredientCommand> ingredients = commandFromController.getIngredients();
+        List<IngredientCommand> ingredients = commandFromController.getIngredients();
         assertEquals(commandFromController.getId(),"99");
         assertEquals(ingredients.size(),2);
         verify(recipeService, times(1)).findRecipeCommandByID(anyString());
@@ -121,7 +118,7 @@ class IngredientControllerTest {
         verify(model, times(1)).addAttribute(eq("recipe"), argumentCaptor.capture());
 
         RecipeCommand commandFromController = argumentCaptor.getValue();
-        Set<IngredientCommand> ingredients = commandFromController.getIngredients();
+        List<IngredientCommand> ingredients = commandFromController.getIngredients();
         IngredientCommand i1FromRecipe = ingredients.stream().filter(ic -> ic.getId()=="1").findFirst().get();
         assertEquals(i1FromRecipe.getDescription(), ingredDesc1);
         verify(recipeService, times(1)).findRecipeCommandByID(anyString());
@@ -132,7 +129,7 @@ class IngredientControllerTest {
     void recipeHasNoIngredients() {
 
         ArgumentCaptor<RecipeCommand> argumentCaptor = ArgumentCaptor.forClass(RecipeCommand.class);
-        recipeCommand.setIngredients(new HashSet<IngredientCommand>());
+        recipeCommand.setIngredients(new ArrayList<IngredientCommand>());
         when(recipeService.findRecipeCommandByID(anyString())).thenReturn(recipeCommand);
         controller.getIngredientsForRecipeID(model, ""+9L);
         verify(model, times(1)).addAttribute(eq("recipe"), argumentCaptor.capture());
@@ -196,7 +193,7 @@ class IngredientControllerTest {
     void getUnknownIngredientByIDMVC() throws Exception{
 
         //remove so we get a 404
-        recipeCommand.setIngredients(new HashSet<IngredientCommand>());
+        recipeCommand.setIngredients(new ArrayList<IngredientCommand>());
 
         when(recipeService.findRecipeCommandByID(anyString())).thenReturn(recipeCommand);
 

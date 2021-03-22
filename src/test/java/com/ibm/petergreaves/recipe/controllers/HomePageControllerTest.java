@@ -18,7 +18,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
@@ -75,7 +74,7 @@ class HomePageControllerTest {
     void modelHasRecipes(){
 
         //given
-        Set<Recipe> recipeSet = new HashSet();
+        Set<Recipe> recipeSet = new HashSet<>();
         Recipe r1 = new Recipe();
         r1.setId("1");
         Recipe r2 = new Recipe();
@@ -93,7 +92,7 @@ class HomePageControllerTest {
 
         //then
 
-        assertTrue(recipeSet.stream().count() == 2);
+        assertEquals(recipeSet.size(),2);
         verify(model, times(1)).addAttribute(eq("recipes"), argumentCaptor.capture());
         verify(recipeService, times(1)).getRecipes();
 
