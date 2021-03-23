@@ -4,6 +4,9 @@ import com.ibm.petergreaves.recipe.domain.*;
 import com.ibm.petergreaves.recipe.repositories.CategoryRepository;
 import com.ibm.petergreaves.recipe.repositories.RecipeRepository;
 import com.ibm.petergreaves.recipe.repositories.UnitOfMeasureRepository;
+import com.ibm.petergreaves.recipe.repositories.reactive.CategoryReactiveRepository;
+import com.ibm.petergreaves.recipe.repositories.reactive.RecipeReactiveRepository;
+import com.ibm.petergreaves.recipe.repositories.reactive.UnitOfMeasureReactiveRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
@@ -30,13 +33,21 @@ private UnitOfMeasureRepository unitOfMeasureRepository;
 private CategoryRepository categoryRepository;
 private RecipeRepository recipeRepository;
 
-
     public RecipeBootstrap(UnitOfMeasureRepository unitOfMeasureRepository, CategoryRepository categoryRepository, RecipeRepository recipeRepository) {
         this.unitOfMeasureRepository = unitOfMeasureRepository;
         this.categoryRepository = categoryRepository;
         this.recipeRepository = recipeRepository;
     }
 
+    @Override
+    public void onApplicationEvent(ContextRefreshedEvent contextRefreshedEvent) {
+
+        loadCategories();
+        loadUom();
+        recipeRepository.saveAll(getRecipes());
+
+
+    }
 
     private void loadCategories(){
         Category cat1 = new Category();
@@ -91,7 +102,7 @@ private RecipeRepository recipeRepository;
     }
 
 
-    public List<Recipe> getRecipes() {
+    private List<Recipe> getRecipes() {
 
 
         // OUMs
@@ -240,14 +251,7 @@ private RecipeRepository recipeRepository;
 
     }
 
-    @Override
-    public void onApplicationEvent(ContextRefreshedEvent contextRefreshedEvent) {
 
-        loadCategories();
-        loadUom();
-        recipeRepository.saveAll(getRecipes());
-
-    }
 
 
     //   i.set
