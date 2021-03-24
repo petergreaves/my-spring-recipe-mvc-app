@@ -5,8 +5,10 @@ import com.ibm.petergreaves.recipe.converters.IngredientToIngredientCommand;
 import com.ibm.petergreaves.recipe.converters.UnitOfMeasureToUnitOfMeasureCommand;
 import com.ibm.petergreaves.recipe.domain.UnitOfMeasure;
 import com.ibm.petergreaves.recipe.repositories.UnitOfMeasureRepository;
+import com.ibm.petergreaves.recipe.repositories.reactive.UnitOfMeasureReactiveRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Flux;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -15,23 +17,19 @@ import java.util.Set;
 @Slf4j
 public class UnitOfMeasureServiceImpl implements UnitOfMeasureService{
 
-    private final UnitOfMeasureRepository unitOfMeasureRepository;
+    private final UnitOfMeasureReactiveRepository unitOfMeasureReactiveRepository;
     private final UnitOfMeasureToUnitOfMeasureCommand unitOfMeasureToUnitOfMeasureCommand;
 
-    public UnitOfMeasureServiceImpl(UnitOfMeasureRepository unitOfMeasureRepository,
-                                    UnitOfMeasureToUnitOfMeasureCommand unitOfMeasureToUnitOfMeasureCommand) {
-        this.unitOfMeasureRepository = unitOfMeasureRepository;
+
+    public UnitOfMeasureServiceImpl(UnitOfMeasureReactiveRepository unitOfMeasureReactiveRepository, UnitOfMeasureToUnitOfMeasureCommand unitOfMeasureToUnitOfMeasureCommand) {
+        this.unitOfMeasureReactiveRepository = unitOfMeasureReactiveRepository;
         this.unitOfMeasureToUnitOfMeasureCommand = unitOfMeasureToUnitOfMeasureCommand;
     }
 
     @Override
-    public Set<UnitOfMeasureCommand> listUnitOfMeasures() {
-        Iterable<UnitOfMeasure> oums =unitOfMeasureRepository.findAll();
+    public Flux<UnitOfMeasureCommand> listUnitOfMeasures() {
 
-        Set<UnitOfMeasureCommand> commands = new HashSet<>();
+        return unitOfMeasureReactiveRepository.findAll().map(unitOfMeasureToUnitOfMeasureCommand::convert);
 
-        oums.spliterator().forEachRemaining(oum -> commands.add(unitOfMeasureToUnitOfMeasureCommand.convert(oum)));
-
-        return commands;
     }
 }

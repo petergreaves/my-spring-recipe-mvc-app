@@ -3,6 +3,7 @@ package com.ibm.petergreaves.recipe.controllers;
 import com.ibm.petergreaves.recipe.commands.IngredientCommand;
 import com.ibm.petergreaves.recipe.commands.RecipeCommand;
 import com.ibm.petergreaves.recipe.commands.UnitOfMeasureCommand;
+import com.ibm.petergreaves.recipe.domain.UnitOfMeasure;
 import com.ibm.petergreaves.recipe.services.IngredientService;
 import com.ibm.petergreaves.recipe.services.RecipeService;
 import com.ibm.petergreaves.recipe.services.UnitOfMeasureService;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 @Controller
@@ -72,7 +74,9 @@ public class IngredientController {
                 ingredientService.findByRecipeIdAndIngredientId(recipeID, ingredID);
   //      ingredientCommand.setRecipeID(recipeID);
         model.addAttribute("ingredient", ingredientCommand);
-        model.addAttribute("uoms", unitOfMeasureService.listUnitOfMeasures());
+
+        List<UnitOfMeasureCommand> uoms=unitOfMeasureService.listUnitOfMeasures().collectList().block();
+        model.addAttribute("uoms", uoms);
 
         return view;
 
@@ -127,7 +131,7 @@ public class IngredientController {
         model.addAttribute("ingredient", ingredientCommand);
 
         // need to add the list for the form to display
-        model.addAttribute("uoms", unitOfMeasureService.listUnitOfMeasures());
+        model.addAttribute("uoms", unitOfMeasureService.listUnitOfMeasures().collectList().block());
 
         return "recipe/ingredient/ingredientform";
     }

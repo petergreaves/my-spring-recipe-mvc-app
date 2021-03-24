@@ -5,17 +5,18 @@ import com.ibm.petergreaves.recipe.converters.RecipeCommandToRecipe;
 import com.ibm.petergreaves.recipe.converters.RecipeToRecipeCommand;
 import com.ibm.petergreaves.recipe.domain.Recipe;
 import com.ibm.petergreaves.recipe.repositories.RecipeRepository;
+import com.ibm.petergreaves.recipe.repositories.reactive.RecipeReactiveRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
 @ExtendWith(SpringExtension.class)
@@ -27,7 +28,7 @@ public class RecipeServiceIT {
     RecipeService recipeService;
 
     @Autowired
-    RecipeRepository recipeRepository;
+    RecipeReactiveRepository recipeReactiveRepository;
 
     @Autowired
     RecipeCommandToRecipe recipeCommandToRecipe;
@@ -37,12 +38,11 @@ public class RecipeServiceIT {
 
 
     @Test
-    @Transactional
     void testSavedProperties(){
 
         final String newTitle = "new title for the recipe";
 
-        Iterable<Recipe> allRecipes = recipeRepository.findAll();
+        Iterable<Recipe> allRecipes = recipeReactiveRepository.findAll().collectList().block();
 
         Recipe testRecipe =allRecipes.iterator().next();
         String testRecipeID = testRecipe.getId();

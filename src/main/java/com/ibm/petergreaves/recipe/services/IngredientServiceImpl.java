@@ -5,8 +5,8 @@ import com.ibm.petergreaves.recipe.converters.IngredientCommandToIngredient;
 import com.ibm.petergreaves.recipe.converters.IngredientToIngredientCommand;
 import com.ibm.petergreaves.recipe.domain.Ingredient;
 import com.ibm.petergreaves.recipe.domain.Recipe;
-import com.ibm.petergreaves.recipe.repositories.RecipeRepository;
-import com.ibm.petergreaves.recipe.repositories.UnitOfMeasureRepository;
+import com.ibm.petergreaves.recipe.repositories.reactive.RecipeReactiveRepository;
+import com.ibm.petergreaves.recipe.repositories.reactive.UnitOfMeasureReactiveRepository;
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.stereotype.Service;
@@ -21,22 +21,26 @@ import java.util.Set;
 @Slf4j
 public class IngredientServiceImpl implements IngredientService {
 
-    final private RecipeRepository recipeRepository;
+    final private RecipeReactiveRepository recipeReactiveRepository;
     final private IngredientCommandToIngredient ingredientCommandToIngredient;
     final private IngredientToIngredientCommand ingredientToIngredientCommand;
-    final private UnitOfMeasureRepository unitOfMeasureRepository;
+    final private UnitOfMeasureReactiveRepository unitOfMeasureReactiveRepository;
 
-    public IngredientServiceImpl(RecipeRepository recipeRepository, IngredientCommandToIngredient ingredientCommandToIngredient, IngredientToIngredientCommand ingredientToIngredientCommand, UnitOfMeasureRepository unitOfMeasureRepository) {
-        this.recipeRepository = recipeRepository;
+
+    public IngredientServiceImpl(RecipeReactiveRepository recipeReactiveRepository,
+                                 IngredientCommandToIngredient ingredientCommandToIngredient,
+                                 IngredientToIngredientCommand ingredientToIngredientCommand,
+                                 UnitOfMeasureReactiveRepository unitOfMeasureReactiveRepository) {
+        this.recipeReactiveRepository = recipeReactiveRepository;
         this.ingredientCommandToIngredient = ingredientCommandToIngredient;
         this.ingredientToIngredientCommand = ingredientToIngredientCommand;
-        this.unitOfMeasureRepository = unitOfMeasureRepository;
+        this.unitOfMeasureReactiveRepository = unitOfMeasureReactiveRepository;
     }
 
     @Override
     public IngredientCommand findByRecipeIdAndIngredientId(String recipeId, String ingredientId) {
 
-        Optional<Recipe> recipeOptional = recipeRepository.findById(recipeId);
+        Optional<Recipe> recipeOptional = recipeReactiveRepository.findById(recipeId).blockOptional();
 
         if (recipeOptional.isEmpty()) {
 
@@ -66,7 +70,7 @@ public class IngredientServiceImpl implements IngredientService {
     public IngredientCommand saveIngredientCommand(IngredientCommand command) {
 
         // what recipe?
-        Optional<Recipe> recipeOptional = recipeRepository.findById(command.getRecipeID());
+        Optional<Recipe> recipeOptional = recipeReactiveRepository.findById(command.getRecipeID()).blockOptional();
 
         if (!recipeOptional.isPresent()) {
             // we are updating an ingredient to an existing recipe
@@ -89,22 +93,20 @@ public class IngredientServiceImpl implements IngredientService {
                 Ingredient found = ingredientOptional.get();
                 found.setDescription(command.getDescription());
                 found.setQuantity(command.getQuantity());
-                found.setUom(unitOfMeasureRepository
-                        .findById(command.getUom().getId())
-                        .orElseThrow(() -> new RuntimeException("Unit of measure NOT FOUND"))); //todo address this
+                found.setUom(unitOfMeasureReactiveRepository
+                        .findById(command.getUom().getId()).block());
 
 
             } else {
                 // its a new ingredient
                 log.debug("This is a new ingredient for the recipe");
                 Ingredient newIngredient = ingredientCommandToIngredient.convert(command);
-                newIngredient.setRecipe(recipe);
                 recipe.addIngredient(newIngredient);
 
             }
 
             // either way, save it
-            Recipe savedRecipe = recipeRepository.save(recipe);
+            Recipe savedRecipe = recipeReactiveRepository.save(recipe).block();
 
 
             // was this an ingredient that had no ID, e.g. completely new?
@@ -142,7 +144,7 @@ public class IngredientServiceImpl implements IngredientService {
 
         Recipe recipe;
 
-        Optional<Recipe> recipeOptional = recipeRepository.findById(command.getRecipeID());
+        Optional<Recipe> recipeOptional = recipeReactiveRepository.findById(command.getRecipeID()).blockOptional();
 
         //bail early
         // TODO throw something, better than return
@@ -165,7 +167,7 @@ public class IngredientServiceImpl implements IngredientService {
             Ingredient ingredientToDelete = toDelete.get();
             ingredientToDelete.setRecipe(null);
             recipe.getIngredients().remove(toDelete.get());
-            recipeRepository.save(recipe);
+            recipeReactiveRepository.save(recipe).block();
         }
 
 

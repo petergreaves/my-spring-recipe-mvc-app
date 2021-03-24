@@ -1,12 +1,9 @@
 package com.ibm.petergreaves.recipe.controllers;
 
-import com.ibm.petergreaves.recipe.commands.IngredientCommand;
 import com.ibm.petergreaves.recipe.commands.RecipeCommand;
 import com.ibm.petergreaves.recipe.exceptions.NotFoundException;
 import com.ibm.petergreaves.recipe.services.ImageService;
-import com.ibm.petergreaves.recipe.services.IngredientService;
 import com.ibm.petergreaves.recipe.services.RecipeService;
-
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -14,16 +11,12 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.stereotype.Controller;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 
 import java.nio.charset.StandardCharsets;
 
@@ -68,17 +61,20 @@ class ImageControllerTest {
     }
 
     @Test
-    void getImageForm(){
+    void getImageForm() throws Exception{
 
-        ArgumentCaptor<String> argumentCaptor = ArgumentCaptor.forClass(String.class);
+        //given
+        RecipeCommand command = new RecipeCommand();
+        command.setId("1");
 
-        when(recipeService.findRecipeCommandByID(anyString())).thenReturn(RecipeCommand.builder().id("1").build());
-        String recipeID = "1";
-        String location=controller.getImageForm(model, recipeID+"");
-        verify(model, times(1)).addAttribute(eq("recipe"), argumentCaptor.capture());
+        when(recipeService.findRecipeCommandByID(anyString())).thenReturn(command);
+
+        //when
+        mockMvc.perform(get("/recipe/1/imageform"))
+                .andExpect(status().isOk())
+                .andExpect(model().attributeExists("recipe"));
+
         verify(recipeService, times(1)).findRecipeCommandByID(anyString());
-        verify(imageService, times(0)).saveImageFile(anyString(), any());
-
     }
     @Test
     void getImageForm404MVC() throws Exception {
@@ -112,7 +108,7 @@ class ImageControllerTest {
                 .andExpect(status().isOk())
                 .andReturn().getResponse();
 
-        assertTrue(resp.getContentType().equals("image/jpeg"));
+        assertEquals(resp.getContentType(), "image/jpeg");
         assertTrue(resp.getContentAsByteArray().length==bytesObject.length);
     }
 
@@ -148,18 +144,8 @@ class ImageControllerTest {
     public void getImageBadRecipeID() throws Exception {
 
         when(recipeService.getRecipeByID(anyString())).thenThrow(NotFoundException.class);
-
-
-
-        mockMvc.perform(get("/recipe/foo/recipeimage"))
-                .andExpect(status().isBadRequest())
-                .andExpect(view().name("404error"));
-
-
+        mockMvc.perform(get("/recipe/8/recipeimage"))
+                .andExpect(status().is4xxClientError());
 
     }
-
-
-
-
 }

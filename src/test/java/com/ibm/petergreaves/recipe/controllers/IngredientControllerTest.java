@@ -2,6 +2,7 @@ package com.ibm.petergreaves.recipe.controllers;
 
 import com.ibm.petergreaves.recipe.commands.IngredientCommand;
 import com.ibm.petergreaves.recipe.commands.RecipeCommand;
+import com.ibm.petergreaves.recipe.commands.UnitOfMeasureCommand;
 import com.ibm.petergreaves.recipe.services.IngredientService;
 import com.ibm.petergreaves.recipe.services.RecipeService;
 import com.ibm.petergreaves.recipe.services.UnitOfMeasureService;
@@ -17,6 +18,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.ui.Model;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 
 import java.util.*;
@@ -173,7 +176,10 @@ class IngredientControllerTest {
     void getIngredientByIDForUpdateMVC() throws Exception{
 
         IngredientCommand ingredientCommand = IngredientCommand.builder().id("2").build();
-        when(ingredientService.findByRecipeIdAndIngredientId(anyString(),anyString())).thenReturn(ingredientCommand);
+        when(ingredientService.findByRecipeIdAndIngredientId(anyString(),anyString())).
+                thenReturn(ingredientCommand);
+
+        when(unitOfMeasureService.listUnitOfMeasures()).thenReturn(Flux.just(new UnitOfMeasureCommand()));
 
         MockMvc mockMvc = MockMvcBuilders.standaloneSetup(controller).build();
         mockMvc.perform(get("/recipe/99/ingredients/2/update"))
@@ -184,8 +190,6 @@ class IngredientControllerTest {
         verify(ingredientService, times(1)).findByRecipeIdAndIngredientId(anyString(),anyString());
 
     }
-
-
 
 
     @Test
