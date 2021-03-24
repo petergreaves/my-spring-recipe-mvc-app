@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Mono;
 
 import java.util.List;
 import java.util.Map;
@@ -52,7 +53,7 @@ public class IngredientController {
 
         log.debug("Getting ingredient for recipe id : " + recipeID + ", ingredient id : " + ingredID + " for show");
         IngredientCommand ingredientCommand =
-                ingredientService.findByRecipeIdAndIngredientId(recipeID, ingredID);
+                ingredientService.findByRecipeIdAndIngredientId(recipeID, ingredID).block();
         model.addAttribute("ingredient", ingredientCommand);
 
         return view;
@@ -71,7 +72,7 @@ public class IngredientController {
 
         log.debug("Getting ingredient for recipe id : " + recipeID + ", ingredient id : " + ingredID + " for update");
         IngredientCommand ingredientCommand =
-                ingredientService.findByRecipeIdAndIngredientId(recipeID, ingredID);
+                ingredientService.findByRecipeIdAndIngredientId(recipeID, ingredID).block();
   //      ingredientCommand.setRecipeID(recipeID);
         model.addAttribute("ingredient", ingredientCommand);
 
@@ -87,7 +88,7 @@ public class IngredientController {
     public String doSaveOrUpdateIngredient(@ModelAttribute IngredientCommand ingredientCommand, @PathVariable String recipeID) {
 
         log.debug("Got an update to ingredients for recipe id : " + recipeID);
-        IngredientCommand saved = ingredientService.saveIngredientCommand(ingredientCommand);
+        IngredientCommand saved = ingredientService.saveIngredientCommand(ingredientCommand).block();
         log.debug("Returning ingred command : " + saved);
         return "redirect:/recipe/" + recipeID + "/ingredients";
     }
@@ -103,7 +104,7 @@ public class IngredientController {
 
         // get an ingredientcommand
 
-        IngredientCommand commandToRemove = ingredientService.findByRecipeIdAndIngredientId(recipeID, ingredientID);
+        IngredientCommand commandToRemove = ingredientService.findByRecipeIdAndIngredientId(recipeID, ingredientID).block();
         // TODO 404 if we can't find either
 
         ingredientService.removeIngredientCommand(commandToRemove);

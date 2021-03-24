@@ -10,7 +10,7 @@ import com.ibm.petergreaves.recipe.repositories.reactive.UnitOfMeasureReactiveRe
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.stereotype.Service;
-
+import reactor.core.publisher.Mono;
 
 
 import java.util.Optional;
@@ -38,36 +38,23 @@ public class IngredientServiceImpl implements IngredientService {
     }
 
     @Override
-    public IngredientCommand findByRecipeIdAndIngredientId(String recipeId, String ingredientId) {
+    public Mono<IngredientCommand> findByRecipeIdAndIngredientId(String recipeId, String ingredientId) {
 
-        Optional<Recipe> recipeOptional = recipeReactiveRepository.findById(recipeId).blockOptional();
+        return recipeReactiveRepository
+                .findById(recipeId)
+                .flatMapIterable(Recipe::getIngredients)
+                .filter(ingredient -> ingredient.getId().equalsIgnoreCase(ingredientId))
+                .single()
+                .map(ingredient -> {
+                    IngredientCommand command = ingredientToIngredientCommand.convert(ingredient);
+                    command.setRecipeID(recipeId);
+                    return command;
+                });
 
-        if (recipeOptional.isEmpty()) {
-
-            log.error("No such recipe with id " + recipeId);
-            //todo error handling
-        }
-
-        Set<Ingredient> ingredients = recipeOptional.get().getIngredients();
-
-        Optional<IngredientCommand> retval = ingredients.stream()
-                .filter(in -> in.getId().equals(ingredientId))
-                .map(ingredientToIngredientCommand::convert)
-                .findFirst();
-        if (!retval.isPresent()) {
-
-            log.error("No such ingredient with id " + ingredientId);
-            //todo error handling
-        }
-        else{
-
-            retval.get().setRecipeID(recipeId);
-        }
-        return retval.get();
     }
 
     @Override
-    public IngredientCommand saveIngredientCommand(IngredientCommand command) {
+    public Mono<IngredientCommand> saveIngredientCommand(IngredientCommand command) {
 
         // what recipe?
         Optional<Recipe> recipeOptional = recipeReactiveRepository.findById(command.getRecipeID()).blockOptional();
@@ -76,7 +63,7 @@ public class IngredientServiceImpl implements IngredientService {
             // we are updating an ingredient to an existing recipe
 
             log.error("Recipe not found for id : " + command.getRecipeID());
-            return new IngredientCommand();
+            return Mono.just(new IngredientCommand());
         } else {
             Recipe recipe = recipeOptional.get();
 
@@ -108,7 +95,6 @@ public class IngredientServiceImpl implements IngredientService {
             // either way, save it
             Recipe savedRecipe = recipeReactiveRepository.save(recipe).block();
 
-
             // was this an ingredient that had no ID, e.g. completely new?
             Optional<Ingredient> savedIngredientOptional = savedRecipe.getIngredients()
                     .stream()
@@ -129,14 +115,14 @@ public class IngredientServiceImpl implements IngredientService {
 
             IngredientCommand ingredientCommand = ingredientToIngredientCommand.convert(savedIngredientOptional.get());
             ingredientCommand.setRecipeID(recipe.getId());
-            return ingredientCommand;
+            return Mono.just(ingredientCommand);
         }
 
     }
 
     @Override
 
-    public void removeIngredientCommand(IngredientCommand command) {
+    public Mono<Void> removeIngredientCommand(IngredientCommand command) {
 
         String ingredientID = command.getId();
 
@@ -151,7 +137,7 @@ public class IngredientServiceImpl implements IngredientService {
 
         if (!recipeOptional.isPresent()) {
             log.error("No such recipe with id : " + command.getRecipeID());
-            return;
+            return null;
         } else {
             recipe = recipeOptional.get();
         }
@@ -170,6 +156,6 @@ public class IngredientServiceImpl implements IngredientService {
             recipeReactiveRepository.save(recipe).block();
         }
 
-
+    return Mono.empty();
     }
 }

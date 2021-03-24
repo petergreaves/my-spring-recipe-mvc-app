@@ -100,7 +100,7 @@ class IngredientControllerTest {
         MockMvc mockMvc = MockMvcBuilders.standaloneSetup(controller).build();
         IngredientCommand i1 = IngredientCommand.builder().id("1").description(ingredDesc1).recipeID("3").build();
 
-        when(ingredientService.findByRecipeIdAndIngredientId(anyString(),anyString())).thenReturn(i1);
+        when(ingredientService.findByRecipeIdAndIngredientId(anyString(),anyString())).thenReturn(Mono.just(i1));
       //then
         mockMvc.perform(get("/recipe/2/ingredients/3/delete")
         )
@@ -159,7 +159,7 @@ class IngredientControllerTest {
     void getIngredientByIDForShowMVC() throws Exception{
 
         IngredientCommand ingredientCommand = IngredientCommand.builder().id("2").build();
-        when(ingredientService.findByRecipeIdAndIngredientId(anyString(),anyString())).thenReturn(ingredientCommand);
+        when(ingredientService.findByRecipeIdAndIngredientId(anyString(),anyString())).thenReturn(Mono.just(ingredientCommand));
 
        // when(recipeService.findRecipeCommandByID(anyLong())).thenReturn(recipeCommand);
 
@@ -177,7 +177,7 @@ class IngredientControllerTest {
 
         IngredientCommand ingredientCommand = IngredientCommand.builder().id("2").build();
         when(ingredientService.findByRecipeIdAndIngredientId(anyString(),anyString())).
-                thenReturn(ingredientCommand);
+                thenReturn(Mono.just(ingredientCommand));
 
         when(unitOfMeasureService.listUnitOfMeasures()).thenReturn(Flux.just(new UnitOfMeasureCommand()));
 

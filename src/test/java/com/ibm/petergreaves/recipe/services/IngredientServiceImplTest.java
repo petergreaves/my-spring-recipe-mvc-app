@@ -74,10 +74,11 @@ class IngredientServiceImplTest {
 
         when(recipeReactiveRepository.findById(anyString())).thenReturn(Mono.just(recipe));
 
-        IngredientCommand ic = ingredientService.findByRecipeIdAndIngredientId("9", "1");
+        IngredientCommand ic = ingredientService.findByRecipeIdAndIngredientId("9", "1").block();
         assertNotNull(ic);;
         assertTrue(ic.getId().equals("1"));
         assertEquals(ic.getRecipeID(),  "9");
+
         verify(recipeReactiveRepository)
                 .findById("9");
 
