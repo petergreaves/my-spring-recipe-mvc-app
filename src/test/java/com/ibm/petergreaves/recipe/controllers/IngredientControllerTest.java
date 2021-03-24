@@ -98,16 +98,18 @@ class IngredientControllerTest {
     void deleteIngredientByRecipeIDAndIngredientID() throws Exception{
 
         MockMvc mockMvc = MockMvcBuilders.standaloneSetup(controller).build();
-        IngredientCommand i1 = IngredientCommand.builder().id("1").description(ingredDesc1).recipeID("3").build();
+        IngredientCommand i1 = IngredientCommand.builder().id("3").description(ingredDesc1).recipeID("2").build();
 
         when(ingredientService.findByRecipeIdAndIngredientId(anyString(),anyString())).thenReturn(Mono.just(i1));
+        when(ingredientService.removeIngredientCommand(any())).thenReturn(Mono.empty());
+
       //then
         mockMvc.perform(get("/recipe/2/ingredients/3/delete")
         )
                 .andExpect(MockMvcResultMatchers.status().is3xxRedirection())
                 .andExpect(MockMvcResultMatchers.view().name("redirect:/recipe/2/ingredients"));
 
-        verify(ingredientService, times(1)).removeIngredientCommand(i1);
+        verify(ingredientService, times(1)).findByRecipeIdAndIngredientId(anyString(), anyString());
         verify(ingredientService, times(1)).removeIngredientCommand(i1);
     }
 
