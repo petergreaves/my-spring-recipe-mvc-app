@@ -13,8 +13,11 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.ui.Model;
+import reactor.core.publisher.Flux;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -52,14 +55,17 @@ class HomePageControllerTest {
     @Test
     void doHomeReturnsIndex() {
 
+
+        Mockito.when(recipeService.getRecipes()).thenReturn(Flux.just(Recipe.builder().build()));
         String page = controller.doHome(model);
         assertEquals(page, "index");
 
     }
 
-
     @Test
     void testMVC() throws Exception{
+
+        Mockito.when(recipeService.getRecipes()).thenReturn(Flux.just(Recipe.builder().build()));
 
         MockMvc mockMvc = MockMvcBuilders.standaloneSetup(controller).build();
         mockMvc.perform(get("/"))
@@ -74,30 +80,25 @@ class HomePageControllerTest {
     void modelHasRecipes(){
 
         //given
-        Set<Recipe> recipeSet = new HashSet<>();
+
         Recipe r1 = new Recipe();
         r1.setId("1");
         Recipe r2 = new Recipe();
         r2.setId("2");
-        recipeSet.add(r1);
-        recipeSet.add(r2);
-
-        ArgumentCaptor<Set<Recipe>> argumentCaptor = ArgumentCaptor.forClass(Set.class);
-
-        Mockito.when(recipeService.getRecipes()).thenReturn(recipeSet);
+        Set<Recipe> recipes = new HashSet<>();
+        recipes.add(r1);
+        recipes.add(r2);
+        Mockito.when(recipeService.getRecipes()).thenReturn(Flux.fromIterable(recipes));
+        ArgumentCaptor<List<Recipe>> argumentCaptor = ArgumentCaptor.forClass(List.class);
 
         //when
         controller.doHome(model);
-
-
         //then
-
-        assertEquals(recipeSet.size(),2);
         verify(model, times(1)).addAttribute(eq("recipes"), argumentCaptor.capture());
         verify(recipeService, times(1)).getRecipes();
 
-        Set<Recipe> setFromController = argumentCaptor.getValue();
-        assertEquals(setFromController.size(),2);
+        List<Recipe> fromController = argumentCaptor.getValue();
+        assertEquals(fromController.size(),2);
 
 
     }

@@ -4,6 +4,7 @@ import com.ibm.petergreaves.recipe.converters.IngredientCommandToIngredient;
 import com.ibm.petergreaves.recipe.converters.IngredientToIngredientCommand;
 import com.ibm.petergreaves.recipe.domain.Recipe;
 import com.ibm.petergreaves.recipe.repositories.RecipeRepository;
+import com.ibm.petergreaves.recipe.repositories.reactive.RecipeReactiveRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
@@ -14,6 +15,8 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
+import reactor.core.publisher.Mono;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.nio.charset.StandardCharsets;
@@ -26,7 +29,7 @@ import static org.mockito.Mockito.*;
 public class ImageServiceImplTest {
 
     @Mock
-    RecipeRepository recipeRepository;
+    RecipeReactiveRepository recipeReactiveRepository;
 
     @Mock
     MultipartFile file;
@@ -56,12 +59,14 @@ public class ImageServiceImplTest {
                 "Spring Framework Guru".getBytes());
         Recipe recipe = Recipe.builder().id("33").build();
 
-        when(recipeRepository.findById(anyString())).thenReturn(Optional.of(recipe));
+
+        when(recipeReactiveRepository.findById(anyString())).thenReturn(Mono.just(recipe));
+        when(recipeReactiveRepository.save(any(Recipe.class))).thenReturn(Mono.just(recipe));
 
         ArgumentCaptor<Recipe> captor = ArgumentCaptor.forClass(Recipe.class);
 
         service.saveImageFile("33", multipartFile);
-        verify(recipeRepository, times(1)).save(captor.capture());
+        verify(recipeReactiveRepository, times(1)).save(captor.capture());
 
         Recipe savedRecipe = captor.getValue();
 

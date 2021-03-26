@@ -29,6 +29,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 class IngredientControllerTest {
 
@@ -83,7 +84,7 @@ class IngredientControllerTest {
 
         ArgumentCaptor<RecipeCommand> argumentCaptor = ArgumentCaptor.forClass(RecipeCommand.class);
 
-        when(recipeService.findRecipeCommandByID(anyString())).thenReturn(recipeCommand);
+        when(recipeService.findRecipeCommandByID(anyString())).thenReturn(Mono.just(recipeCommand));
         controller.getIngredientsForRecipeID(model, "9");
         verify(model, times(1)).addAttribute(eq("recipe"), argumentCaptor.capture());
 
@@ -103,10 +104,14 @@ class IngredientControllerTest {
         when(ingredientService.findByRecipeIdAndIngredientId(anyString(),anyString())).thenReturn(Mono.just(i1));
         when(ingredientService.removeIngredientCommand(any())).thenReturn(Mono.empty());
 
+        //given
+        RecipeCommand recipeCommand = new RecipeCommand();
+        when(recipeService.findRecipeCommandByID(anyString())).thenReturn(Mono.just(recipeCommand));
+
       //then
         mockMvc.perform(get("/recipe/2/ingredients/3/delete")
         )
-                .andExpect(MockMvcResultMatchers.status().is3xxRedirection())
+                .andExpect(status().is3xxRedirection())
                 .andExpect(MockMvcResultMatchers.view().name("redirect:/recipe/2/ingredients"));
 
         verify(ingredientService, times(1)).findByRecipeIdAndIngredientId(anyString(), anyString());
@@ -118,7 +123,7 @@ class IngredientControllerTest {
 
         ArgumentCaptor<RecipeCommand> argumentCaptor = ArgumentCaptor.forClass(RecipeCommand.class);
 
-        when(recipeService.findRecipeCommandByID(anyString())).thenReturn(recipeCommand);
+        when(recipeService.findRecipeCommandByID(anyString())).thenReturn(Mono.just(recipeCommand));
         controller.getIngredientsForRecipeID(model, "9");
         verify(model, times(1)).addAttribute(eq("recipe"), argumentCaptor.capture());
 
@@ -135,7 +140,7 @@ class IngredientControllerTest {
 
         ArgumentCaptor<RecipeCommand> argumentCaptor = ArgumentCaptor.forClass(RecipeCommand.class);
         recipeCommand.setIngredients(new ArrayList<IngredientCommand>());
-        when(recipeService.findRecipeCommandByID(anyString())).thenReturn(recipeCommand);
+        when(recipeService.findRecipeCommandByID(anyString())).thenReturn(Mono.just(recipeCommand));
         controller.getIngredientsForRecipeID(model, ""+9L);
         verify(model, times(1)).addAttribute(eq("recipe"), argumentCaptor.capture());
 
@@ -149,12 +154,21 @@ class IngredientControllerTest {
     @Test
     void testGetIngredientsMVC() throws Exception{
 
-            MockMvc mockMvc = MockMvcBuilders.standaloneSetup(controller).build();
-            mockMvc.perform(get("/recipe/99/ingredients"))
-                    .andExpect(MockMvcResultMatchers.status().isOk())
-                    .andExpect(MockMvcResultMatchers.view().name("recipe/ingredient/list"));
-             verify(recipeService, times(1)).findRecipeCommandByID(anyString());
 
+        MockMvc mockMvc = MockMvcBuilders.standaloneSetup(controller).build();
+
+        //given
+        RecipeCommand recipeCommand = new RecipeCommand();
+        when(recipeService.findRecipeCommandByID(anyString())).thenReturn(Mono.just(recipeCommand));
+
+        //when
+        mockMvc.perform(get("/recipe/1/ingredients"))
+                .andExpect(status().isOk())
+                .andExpect(MockMvcResultMatchers.view().name("recipe/ingredient/list"))
+                .andExpect(MockMvcResultMatchers.model().attributeExists("recipe"));
+
+        //then
+        verify(recipeService, times(1)).findRecipeCommandByID(anyString());
     }
 
     @Test
@@ -167,7 +181,7 @@ class IngredientControllerTest {
 
         MockMvc mockMvc = MockMvcBuilders.standaloneSetup(controller).build();
         mockMvc.perform(get("/recipe/99/ingredients/2/show"))
-                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.model().attributeExists("ingredient"))
                 .andExpect(MockMvcResultMatchers.view().name("recipe/ingredient/show"));
         verify(ingredientService, times(1)).findByRecipeIdAndIngredientId(anyString(),anyString());
@@ -185,7 +199,7 @@ class IngredientControllerTest {
 
         MockMvc mockMvc = MockMvcBuilders.standaloneSetup(controller).build();
         mockMvc.perform(get("/recipe/99/ingredients/2/update"))
-                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.model().attributeExists("ingredient"))
                 .andExpect(MockMvcResultMatchers.model().attributeExists("uoms"))
                 .andExpect(MockMvcResultMatchers.view().name("recipe/ingredient/ingredientform"));
@@ -201,11 +215,11 @@ class IngredientControllerTest {
         //remove so we get a 404
         recipeCommand.setIngredients(new ArrayList<IngredientCommand>());
 
-        when(recipeService.findRecipeCommandByID(anyString())).thenReturn(recipeCommand);
+        when(recipeService.findRecipeCommandByID(anyString())).thenReturn(Mono.just(recipeCommand));
 
         MockMvc mockMvc = MockMvcBuilders.standaloneSetup(controller).build();
         mockMvc.perform(get("/recipe/99/ingredients/2/show"))
-                .andExpect(MockMvcResultMatchers.status().is4xxClientError());
+                .andExpect(status().is4xxClientError());
         verify(recipeService, times(1)).findRecipeCommandByID(anyString());
 
     }

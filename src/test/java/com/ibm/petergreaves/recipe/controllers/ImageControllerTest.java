@@ -17,6 +17,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.ui.Model;
+import reactor.core.publisher.Mono;
 
 import java.nio.charset.StandardCharsets;
 
@@ -67,7 +68,7 @@ class ImageControllerTest {
         RecipeCommand command = new RecipeCommand();
         command.setId("1");
 
-        when(recipeService.findRecipeCommandByID(anyString())).thenReturn(command);
+        when(recipeService.findRecipeCommandByID(anyString())).thenReturn(Mono.just(command));
 
         //when
         mockMvc.perform(get("/recipe/1/imageform"))
@@ -80,7 +81,7 @@ class ImageControllerTest {
     void getImageForm404MVC() throws Exception {
 
 
-        when(recipeService.findRecipeCommandByID(anyString())).thenReturn(null);
+        when(recipeService.findRecipeCommandByID(anyString())).thenReturn(Mono.empty());
 
         mockMvc.perform(get("/recipe/1/imageform"))
                 .andExpect(status().is4xxClientError());
@@ -102,7 +103,7 @@ class ImageControllerTest {
         }
 
         RecipeCommand command = RecipeCommand.builder().id("33").image(bytesObject).build();
-        when(recipeService.findRecipeCommandByID(anyString())).thenReturn(command);
+        when(recipeService.findRecipeCommandByID(anyString())).thenReturn(Mono.just(command));
 
         MockHttpServletResponse resp=mockMvc.perform(get("/recipe/1/recipeimage"))
                 .andExpect(status().isOk())
@@ -115,7 +116,8 @@ class ImageControllerTest {
     @Test
     void getImageFormMVC() throws Exception{
 
-        when(recipeService.findRecipeCommandByID(anyString())).thenReturn(RecipeCommand.builder().id("1").build());
+        when(recipeService.findRecipeCommandByID(anyString()))
+                .thenReturn(Mono.just(RecipeCommand.builder().id("1").build()));
 
         mockMvc.perform(get("/recipe/1/imageform"))
                 .andExpect(status().isOk())
@@ -137,15 +139,6 @@ class ImageControllerTest {
 
         verify(imageService, times(1)).saveImageFile(anyString(), any());
 
-
-    }
-
-    @Test
-    public void getImageBadRecipeID() throws Exception {
-
-        when(recipeService.getRecipeByID(anyString())).thenThrow(NotFoundException.class);
-        mockMvc.perform(get("/recipe/8/recipeimage"))
-                .andExpect(status().is4xxClientError());
 
     }
 }

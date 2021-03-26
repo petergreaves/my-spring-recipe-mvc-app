@@ -3,7 +3,9 @@ package com.ibm.petergreaves.recipe.services;
 import com.ibm.petergreaves.recipe.converters.RecipeCommandToRecipe;
 import com.ibm.petergreaves.recipe.converters.RecipeToRecipeCommand;
 import com.ibm.petergreaves.recipe.domain.Recipe;
+import com.ibm.petergreaves.recipe.exceptions.NotFoundException;
 import com.ibm.petergreaves.recipe.repositories.RecipeRepository;
+import com.ibm.petergreaves.recipe.repositories.reactive.RecipeReactiveRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
@@ -13,6 +15,8 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import java.util.HashSet;
 import java.util.Optional;
@@ -26,7 +30,7 @@ class RecipeServiceImplTest {
     RecipeServiceImpl recipeService;
 
     @Mock
-    RecipeRepository recipeRepository;
+    RecipeReactiveRepository recipeRepository;
 
     private AutoCloseable closeable;
 
@@ -52,9 +56,9 @@ class RecipeServiceImplTest {
         recipes.add(rec1);
         recipes.add(rec2);
 
-        when(recipeRepository.findAll()).thenReturn(recipes);
+        when(recipeRepository.findAll()).thenReturn(Flux.just(rec1, rec2));
 
-        assertEquals(recipeService.getRecipes().size(), 2);
+        assertEquals(recipeService.getRecipes().count().block().longValue(), 2);
         verify(recipeRepository, times(1)).findAll();
 
 
@@ -70,9 +74,9 @@ class RecipeServiceImplTest {
 
         final ArgumentCaptor<Recipe> captor = ArgumentCaptor.forClass(Recipe.class);
 
-        when(recipeRepository.findById(id)).thenReturn(Optional.of(rec1));
+        when(recipeRepository.findById(id)).thenReturn(Mono.just(rec1));
 
-        Recipe recipeReturned = recipeService.getRecipeByID(id);
+        Recipe recipeReturned = recipeService.getRecipeByID(id).block();
 
         assertEquals(recipeReturned.getId(), rec1.getId());
         verify(recipeRepository, times(1)).findById(anyString());
@@ -83,7 +87,7 @@ class RecipeServiceImplTest {
 
         String id = "1002";
 
-        when(recipeRepository.findById(id)).thenReturn(Optional.empty());
+        when(recipeRepository.findById(id)).thenThrow(NotFoundException.class);
         assertThrows(RuntimeException.class,() -> { recipeService.getRecipeByID(id);} );
         verify(recipeRepository, times(1)).findById(anyString());
     }
@@ -91,6 +95,8 @@ class RecipeServiceImplTest {
     @Test
     void deleteRecipeByID(){
 
+
+        when(recipeRepository.deleteById(anyString())).thenReturn(Mono.empty());
         //given
         String id = "2";
 

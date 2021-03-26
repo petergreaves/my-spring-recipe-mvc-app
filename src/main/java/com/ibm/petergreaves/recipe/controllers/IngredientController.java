@@ -34,7 +34,7 @@ public class IngredientController {
     public String getIngredientsForRecipeID(Model model, @PathVariable String recipeID) {
         log.debug("Getting ingredients for recipe : " + recipeID);
 
-        RecipeCommand recipe = recipeService.findRecipeCommandByID(recipeID);
+        RecipeCommand recipe = recipeService.findRecipeCommandByID(recipeID).block();
         model.addAttribute("recipe", recipe);
 
         return "recipe/ingredient/list";
@@ -109,7 +109,7 @@ public class IngredientController {
 
         ingredientService.removeIngredientCommand(commandToRemove);
 
-        RecipeCommand recipe = recipeService.findRecipeCommandByID(recipeID);
+        RecipeCommand recipe = recipeService.findRecipeCommandByID(recipeID).block();
         model.addAttribute("recipe", recipe);
 
 
@@ -121,7 +121,7 @@ public class IngredientController {
     @GetMapping("/recipe/{recipeID}/ingredient/new")
     public String newRecipeIngredient(Model model, @PathVariable String recipeID) {
 
-        RecipeCommand recipeCommand = recipeService.findRecipeCommandByID(recipeID);
+        RecipeCommand recipeCommand = recipeService.findRecipeCommandByID(recipeID).block();
         // assume for now we have a recipe, but we should execptn if null
 
         IngredientCommand ingredientCommand = IngredientCommand.builder().build();

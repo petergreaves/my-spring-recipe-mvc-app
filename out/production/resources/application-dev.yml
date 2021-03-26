@@ -1,0 +1,20 @@
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:13306/sfg_dev
+    username: sfg_dev_user
+    password: pa55w0rd
+    initialization-mode: never
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
+    database: mysql
+    show-sql: true
+ #   properties:
+ #     javax:
+ #       persistence:
+ #         schema-generation:
+ #           create-source: metadata
+ #           scripts:
+ #             action: create
+ #             create-target: recipe_database_create.sql

@@ -22,8 +22,6 @@ public class Ingredient {
     private Recipe recipe;
     private String description;
     private BigDecimal quantity;
-
-    @DBRef
     private UnitOfMeasure uom;
 
 

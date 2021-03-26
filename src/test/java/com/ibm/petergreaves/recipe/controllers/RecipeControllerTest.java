@@ -18,6 +18,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import reactor.core.publisher.Mono;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
@@ -69,7 +70,7 @@ class RecipeControllerTest {
 
 
         ArgumentCaptor<Recipe> argumentCaptor = ArgumentCaptor.forClass(Recipe.class);
-        when(recipeService.getRecipeByID(id)).thenReturn(r1);
+        when(recipeService.getRecipeByID(id)).thenReturn(Mono.just(r1));
 
         //when
         controller.getRecipeByID(model, id+"");
@@ -94,7 +95,7 @@ class RecipeControllerTest {
         command.setTitle("title");
 
         ArgumentCaptor<RecipeCommand> argumentCaptor = ArgumentCaptor.forClass(RecipeCommand.class);
-        when(recipeService.saveRecipeCommand(any(RecipeCommand.class))).thenReturn(command);
+        when(recipeService.saveRecipeCommand(any(RecipeCommand.class))).thenReturn(Mono.just(command));
 
         controller.doSaveOrUpdate(command, bindingResult, model);
 
@@ -120,7 +121,7 @@ class RecipeControllerTest {
         RecipeCommand postCommand = new RecipeCommand();
         postCommand.setId("333");
 
-        when(recipeService.saveRecipeCommand(any(RecipeCommand.class))).thenReturn(postCommand);
+        when(recipeService.saveRecipeCommand(any(RecipeCommand.class))).thenReturn(Mono.just(postCommand));
 
 
         mockMvc.perform(post("/recipe")
@@ -149,7 +150,12 @@ class RecipeControllerTest {
     @Test
     void testViewForShowRecipe() throws Exception{
 
-        when(recipeService.getRecipeByID("33")).thenReturn(any(Recipe.class));
+        //given
+        String id = "33";
+        Recipe r1 = new Recipe();
+        r1.setId(id);
+
+        when(recipeService.getRecipeByID("33")).thenReturn(Mono.just(r1));
 
         mockMvc.perform(get("/recipe/33/show"))
                 .andExpect(status().isOk())
@@ -165,7 +171,7 @@ class RecipeControllerTest {
         RecipeCommand command = new RecipeCommand();
         command.setId("333");
 
-        when(recipeService.findRecipeCommandByID("333")).thenReturn(command);
+        when(recipeService.findRecipeCommandByID("333")).thenReturn(Mono.just(command));
 
         mockMvc.perform(get("/recipe/333/update"))
                 .andExpect(status().isOk())
@@ -215,7 +221,8 @@ class RecipeControllerTest {
     @Test
     public void validateNewGoodRecipe() throws Exception {
 
-        when(recipeService.saveRecipeCommand(any(RecipeCommand.class))).thenReturn(RecipeCommand.builder().id("55").build());
+        when(recipeService.saveRecipeCommand(any(RecipeCommand.class)))
+                .thenReturn(Mono.just(RecipeCommand.builder().id("55").build()));
         mockMvc.perform(post("/recipe")
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                 .param("id", "55")
@@ -234,7 +241,8 @@ class RecipeControllerTest {
     @Disabled
     public void validateBadRecipeNoDirections() throws Exception {
 
-        when(recipeService.saveRecipeCommand(any(RecipeCommand.class))).thenReturn(RecipeCommand.builder().id("55").build());
+        when(recipeService.saveRecipeCommand(any(RecipeCommand.class)))
+                .thenReturn(Mono.just(RecipeCommand.builder().id("55").build()));
         mockMvc.perform(post("/recipe")
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                 .param("id", "55")

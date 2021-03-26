@@ -36,7 +36,6 @@ public class Recipe {
 
 
     @Builder.Default
-    @DBRef
     private Set<Category> categories= new HashSet<>();
 
 

@@ -2,9 +2,11 @@ package com.ibm.petergreaves.recipe.services;
 
 import com.ibm.petergreaves.recipe.domain.Recipe;
 import com.ibm.petergreaves.recipe.repositories.RecipeRepository;
+import com.ibm.petergreaves.recipe.repositories.reactive.RecipeReactiveRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import reactor.core.publisher.Mono;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -12,40 +14,42 @@ import java.util.Optional;
 
 @Service
 @Slf4j
-public class ImageServiceImpl implements ImageService{
+public class ImageServiceImpl implements ImageService {
 
-    private RecipeRepository recipeRepository;
+    private RecipeReactiveRepository recipeReactiveRepository;
+
+    public ImageServiceImpl(RecipeReactiveRepository recipeReactiveRepository) {
+        this.recipeReactiveRepository = recipeReactiveRepository;
+    }
 
     @Override
-    public void saveImageFile(String recipeId, MultipartFile file) {
+    public Mono<Void> saveImageFile(String recipeId, MultipartFile file) {
 
-        log.debug("Got an image file for " + recipeId);
+        Mono<Recipe> recipeMono = recipeReactiveRepository.findById(recipeId)
+                .map(recipe -> {
+                    Byte[] byteObjects = new Byte[0];
+                    try {
+                        byteObjects = new Byte[file.getBytes().length];
 
-        Optional<Recipe> recipeOptional =recipeRepository.findById(recipeId);
+                        int i = 0;
 
-        if (recipeOptional.isPresent()){
-            Recipe recipe = recipeOptional.get();
-            try{
-                byte[] bytesPrim = file.getBytes();
-                Byte[] bytes = new Byte[bytesPrim.length];
-                Arrays.setAll(bytes, n -> bytesPrim[n]);
-                recipe.setImage(bytes);
-                recipeRepository.save(recipe);
-                log.debug("Saved image for recipe " + recipeId);
-            }
-            catch (IOException e) {
+                        for (byte b : file.getBytes()) {
+                            byteObjects[i++] = b;
+                        }
 
-                // TODO better error handling
-                e.printStackTrace();
-                log.error("Couldn't get image bytes");
-            }
+                        recipe.setImage(byteObjects);
+                        return recipe;
 
-        }
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        throw new RuntimeException(e);
+                    }
+                });
+
+        recipeReactiveRepository.save(recipeMono.block()).block();
+
+        return Mono.empty();
     }
 
-    public ImageServiceImpl(RecipeRepository recipeRepository) {
-        this.recipeRepository = recipeRepository;
 
-
-    }
 }

@@ -42,7 +42,7 @@ public class ImageController {
     public String getImageForm(Model model, @PathVariable String recipeID) {
 
 
-        RecipeCommand command = recipeService.findRecipeCommandByID(recipeID);
+        RecipeCommand command = recipeService.findRecipeCommandByID(recipeID).block();
         if (command == null) {
             throw new ResponseStatusException(
                     HttpStatus.NOT_FOUND, "Recipe not found with id " + recipeID
@@ -57,7 +57,7 @@ public class ImageController {
     @GetMapping("/recipe/{recipeID}/recipeimage")
     public void getImageStream(@PathVariable String recipeID, HttpServletResponse response) throws IOException {
 
-        RecipeCommand command = recipeService.findRecipeCommandByID(recipeID);
+        RecipeCommand command = recipeService.findRecipeCommandByID(recipeID).block();
         if (command==null){
             throw new ResponseStatusException(
                     HttpStatus.NOT_FOUND, "Recipe not found with id " +recipeID

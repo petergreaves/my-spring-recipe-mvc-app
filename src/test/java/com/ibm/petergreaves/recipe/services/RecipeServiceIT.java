@@ -48,7 +48,7 @@ public class RecipeServiceIT {
         String testRecipeID = testRecipe.getId();
         RecipeCommand command = recipeToRecipeCommand.convert(testRecipe);
 
-        RecipeCommand savedCommand=recipeService.saveRecipeCommand(command);
+        RecipeCommand savedCommand=recipeService.saveRecipeCommand(command).block();
         assertEquals(command.getTitle(),  savedCommand.getTitle());
         assertEquals(command.getDescription(),  savedCommand.getDescription());
         assertEquals(command.getSource(),  savedCommand.getSource());
