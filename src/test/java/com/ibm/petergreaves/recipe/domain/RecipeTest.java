@@ -18,11 +18,11 @@ class RecipeTest {
     cupUom.setDescription("Cup");
 
         Set<Ingredient> ingredients = new HashSet<>();
-        Ingredient tomatoSauce = Ingredient.builder()
-                .description("Tomato Sauce")
-                .quantity(new BigDecimal(1))
-                .uom(cupUom)
-                .build();
+        Ingredient tomatoSauce = new Ingredient();
+        tomatoSauce.setDescription("Tomato Sauce");
+        tomatoSauce.setQuantity(new BigDecimal(1));
+        tomatoSauce.setUom(cupUom);
+
 
         ingredients.add(tomatoSauce);
         Recipe recipe = Recipe.builder().ingredients(ingredients).build();

@@ -21,12 +21,14 @@ public class IngredientCommandToIngredient implements Converter<IngredientComman
             return null;
         }
 
-        return Ingredient.builder()
-                .id(ingredientCommand.getId())
-                .description(ingredientCommand.getDescription())
-                .uom(new UnitOfMeasureCommandToUnitOfMeasure().convert(ingredientCommand.getUom()))
-                .quantity(ingredientCommand.getQuantity())
-                .build();
 
+        Ingredient ingredient = new Ingredient();
+
+        ingredient.setId(ingredientCommand.getId());
+        ingredient.setDescription(ingredientCommand.getDescription());
+        ingredient.setUom(new UnitOfMeasureCommandToUnitOfMeasure().convert(ingredientCommand.getUom()));
+        ingredient.setQuantity(ingredientCommand.getQuantity());
+
+        return ingredient;
     }
 }

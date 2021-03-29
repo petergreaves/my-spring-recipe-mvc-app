@@ -58,7 +58,7 @@ public class IngredientToIngredientCommandTest {
     @Test
     void returnsEmptyForEmpty() {
 
-        assertNotNull(ingredientConverter.convert(Ingredient.builder().build()));
+        assertNotNull(ingredientConverter.convert(new Ingredient()));
 
     }
 
@@ -67,14 +67,13 @@ public class IngredientToIngredientCommandTest {
     @Test
     void convert() {
 
-        Ingredient ingredient = Ingredient
-                .builder()
-                .description(desc)
-                .id(idExpected)
-                .quantity(qty)
-                .uom(uom)
-                .recipe(recipe)
-                .build();
+        Ingredient ingredient = new Ingredient();
+
+        ingredient.setDescription(desc);
+        ingredient.setId(idExpected);
+        ingredient.setQuantity(qty);
+        ingredient.setUom(uom);
+        ingredient.setRecipe(recipe);
 
         IngredientCommand converted = ingredientConverter.convert(ingredient);
 

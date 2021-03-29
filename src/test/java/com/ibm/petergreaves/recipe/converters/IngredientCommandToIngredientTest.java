@@ -31,13 +31,12 @@ class IngredientCommandToIngredientTest {
         uom =new UnitOfMeasure();
         uom.setDescription("Cup");
         uom.setId(uomID);
-        expected= Ingredient.builder()
-                .id(idExpected)
-                .quantity(qty)
-                .description(desc)
-                .recipe(recipe)
-                .uom(uom)
-                .build();
+        expected = new Ingredient();
+
+        expected.setDescription(desc);
+        expected.setId(idExpected);
+        expected.setQuantity(qty);
+        expected.setUom(uom);
 
         ingredientConverter = new IngredientCommandToIngredient();
 
@@ -60,6 +59,11 @@ class IngredientCommandToIngredientTest {
 
     @Test
     void convert() {
+
+
+       UnitOfMeasure uom =new UnitOfMeasure();
+        uom.setDescription("Cup");
+        uom.setId(uomID);
 
         IngredientCommand command = IngredientCommand
                 .builder()

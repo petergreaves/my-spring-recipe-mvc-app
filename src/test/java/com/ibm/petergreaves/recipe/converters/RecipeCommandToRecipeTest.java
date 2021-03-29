@@ -8,6 +8,7 @@ import com.ibm.petergreaves.recipe.domain.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.core.convert.converter.Converter;
+import org.springframework.data.mongodb.core.aggregation.ArrayOperators;
 
 
 import java.io.DataInput;
@@ -53,10 +54,15 @@ class RecipeCommandToRecipeTest {
         recipeNotes.setRecipeNotes(recipeNotesText);
 
         Set<Ingredient> ingredients = new HashSet<>();
-        ingredients.add(
-                Ingredient.builder().id("1").build());
-        ingredients.add(
-                Ingredient.builder().id("2").build());
+
+        Ingredient i1 = new Ingredient();
+        i1.setId("1");
+
+        Ingredient i2 = new Ingredient();
+        i1.setId("1");
+
+        ingredients.add(i1);
+        ingredients.add(i2);
 
         categories = new HashSet<>();
         categories.add(

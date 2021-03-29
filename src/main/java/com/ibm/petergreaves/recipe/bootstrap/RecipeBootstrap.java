@@ -29,9 +29,9 @@ import java.util.*;
 @Profile("default")
 public class RecipeBootstrap implements ApplicationListener<ContextRefreshedEvent> {
 
-private UnitOfMeasureRepository unitOfMeasureRepository;
-private CategoryRepository categoryRepository;
-private RecipeRepository recipeRepository;
+    private UnitOfMeasureRepository unitOfMeasureRepository;
+    private CategoryRepository categoryRepository;
+    private RecipeRepository recipeRepository;
 
     public RecipeBootstrap(UnitOfMeasureRepository unitOfMeasureRepository, CategoryRepository categoryRepository, RecipeRepository recipeRepository) {
         this.unitOfMeasureRepository = unitOfMeasureRepository;
@@ -49,7 +49,7 @@ private RecipeRepository recipeRepository;
 
     }
 
-    private void loadCategories(){
+    private void loadCategories() {
         Category cat1 = new Category();
         cat1.setDescription("American");
         categoryRepository.save(cat1);
@@ -67,7 +67,7 @@ private RecipeRepository recipeRepository;
         categoryRepository.save(cat4);
     }
 
-    private void loadUom(){
+    private void loadUom() {
         UnitOfMeasure uom1 = new UnitOfMeasure();
         uom1.setDescription("Teaspoon");
         unitOfMeasureRepository.save(uom1);
@@ -153,37 +153,32 @@ private RecipeRepository recipeRepository;
         Notes guacNotes = new Notes();
         guacNotes.setRecipeNotes("Here are the notes for the guacamole recipe\n\nLovely!!");
 
-        Ingredient sugar = Ingredient.builder()
-                .description("Sugar")
-                .uom(cupUom.get())
-                .quantity(new BigDecimal(0.5))
-                .build();
-        Ingredient eggs = Ingredient.builder()
-                .description("Eggs")
-                .quantity(new BigDecimal(2))
-                .uom(cupUom.get())
-                .build();
-        Ingredient flour = Ingredient.builder()
-                .description("Flour")
-                .quantity(new BigDecimal(1))
-                .uom(cupUom.get())
-                .build();
-        Ingredient avocado = Ingredient.builder()
-                .description("Avocado")
-                .quantity(new BigDecimal(1))
-                .uom(eachUom.get())
-                .build();
-        Ingredient mozzarella = Ingredient.builder()
-                .description("Mozzarella")
-                .quantity(new BigDecimal(4))
-                .uom(ounceUom.get())
-                .build();
+        Ingredient sugar = new Ingredient();
+        sugar.setDescription("Sugar");
+        sugar.setUom(cupUom.get());
+        sugar.setQuantity(new BigDecimal(0.5));
+        Ingredient eggs = new Ingredient();
+        eggs.setDescription("Eggs");
+        eggs.setQuantity(new BigDecimal(2));
+        eggs.setUom(cupUom.get());
+        Ingredient flour = new Ingredient();
+        flour.setDescription("Flour");
+        flour.setQuantity(new BigDecimal(1));
+        flour.setUom(cupUom.get());
+        Ingredient avocado = new Ingredient();
+        avocado.setDescription("Avocado");
+        avocado.setQuantity(new BigDecimal(1));
+        avocado.setUom(eachUom.get());
 
-        Ingredient tomatoSauce = Ingredient.builder()
-                .description("Tomato Sauce")
-                .quantity(new BigDecimal(1))
-                .uom(cupUom.get())
-                .build();
+        Ingredient mozzarella = new Ingredient();
+        mozzarella.setDescription("Mozzarella");
+        mozzarella.setQuantity(new BigDecimal(4));
+        mozzarella.setUom(ounceUom.get());
+
+        Ingredient tomatoSauce = new Ingredient();
+        tomatoSauce.setDescription("Tomato Sauce");
+        tomatoSauce.setQuantity(new BigDecimal(1));
+        tomatoSauce.setUom(cupUom.get());
 
 
         Set<Category> guacCats = new HashSet<>();
@@ -214,7 +209,7 @@ private RecipeRepository recipeRepository;
                 .categories(guacCats)
                 .build();
 
-       // guacamole.getIngredients().forEach(ing -> ing.setRecipe(guacamole));
+        // guacamole.getIngredients().forEach(ing -> ing.setRecipe(guacamole));
 
         retval.add(guacamole);
 
@@ -252,8 +247,6 @@ private RecipeRepository recipeRepository;
     }
 
 
-
-
     //   i.set
 
         /*
@@ -268,7 +261,6 @@ private RecipeRepository recipeRepository;
         Red radishes or jicama, to garnish
         Tortilla chips, to serve
         */
-
 
 
 }

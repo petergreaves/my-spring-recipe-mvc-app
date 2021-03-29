@@ -8,10 +8,12 @@ import com.ibm.petergreaves.recipe.converters.RecipeCommandToRecipe;
 import com.ibm.petergreaves.recipe.converters.RecipeToRecipeCommand;
 import com.ibm.petergreaves.recipe.domain.Ingredient;
 import com.ibm.petergreaves.recipe.domain.Recipe;
+import com.ibm.petergreaves.recipe.domain.UnitOfMeasure;
 import com.ibm.petergreaves.recipe.repositories.RecipeRepository;
 import com.ibm.petergreaves.recipe.repositories.UnitOfMeasureRepository;
 import com.ibm.petergreaves.recipe.repositories.reactive.RecipeReactiveRepository;
 import com.ibm.petergreaves.recipe.repositories.reactive.UnitOfMeasureReactiveRepository;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -45,7 +47,7 @@ class IngredientServiceImplTest {
         closeable = MockitoAnnotations.openMocks(this);
         ingredientService = new IngredientServiceImpl(recipeReactiveRepository,
                 new IngredientCommandToIngredient(),
-                new IngredientToIngredientCommand(),  unitOfMeasureReactiveRepository);
+                new IngredientToIngredientCommand(), unitOfMeasureReactiveRepository);
     }
 
     @AfterEach
@@ -54,14 +56,29 @@ class IngredientServiceImplTest {
     }
 
     @Test
-    void getIngredientForRecipeIDAndRecipeIDHappyPath(){
+    void getIngredientForRecipeIDAndRecipeIDHappyPath() {
 
         Recipe recipe = new Recipe();
 
         recipe.setId("9");
-        Ingredient i1 = Ingredient.builder().id("1").build();
-        Ingredient i2 = Ingredient.builder().id("2").build();
-        Ingredient i3 = Ingredient.builder().id("3").build();
+
+        UnitOfMeasure uom = new UnitOfMeasure();
+        uom.setDescription("spoonful");
+        uom.setId("4");
+
+        Ingredient i1 = new Ingredient();
+        i1.setId("1");
+             i1.setUom(uom);
+
+
+        Ingredient i2 = new Ingredient();
+        i2.setId("2");
+               i2.setUom(uom);
+
+        Ingredient i3 = new Ingredient();
+        i3.setId("3");
+            i3.setUom(uom);
+
         Set<Ingredient> ingredientSet = new HashSet<>();
 
         ingredientSet.add(i1);
@@ -75,9 +92,10 @@ class IngredientServiceImplTest {
         when(recipeReactiveRepository.findById(anyString())).thenReturn(Mono.just(recipe));
 
         IngredientCommand ic = ingredientService.findByRecipeIdAndIngredientId("9", "1").block();
-        assertNotNull(ic);;
+        assertNotNull(ic);
         assertTrue(ic.getId().equals("1"));
-        assertEquals(ic.getRecipeID(),  "9");
+        assertNotNull(ic.getUom().getDescription());
+        assertEquals(ic.getRecipeID(), "9");
 
         verify(recipeReactiveRepository)
                 .findById("9");
@@ -86,13 +104,18 @@ class IngredientServiceImplTest {
     }
 
     @Test
-    void doDeleteByRecipeIDAndIngredientID(){
+    void doDeleteByRecipeIDAndIngredientID() {
 
         Recipe recipe = Recipe.builder().id("33").build();
 
-        Ingredient i1 = Ingredient.builder().id("1").build();
-        Ingredient i2 = Ingredient.builder().id("2").build();
-        Ingredient i3 = Ingredient.builder().id("3").build();
+        Ingredient i1 = new Ingredient();
+        i1.setId("1");
+
+        Ingredient i2 = new Ingredient();
+        i1.setId("1");
+
+        Ingredient i3 = new Ingredient();
+        i1.setId("3");
         Set<Ingredient> ingredientSet = new HashSet<>();
 
         ingredientSet.add(i1);
@@ -105,7 +128,7 @@ class IngredientServiceImplTest {
 
         when(recipeReactiveRepository.findById(anyString())).thenReturn(Mono.just(recipe));
         when(recipeReactiveRepository.save(any())).thenReturn(Mono.just(recipe));
-        IngredientCommand command =IngredientCommand.builder().id("2").recipeID("33").build();
+        IngredientCommand command = IngredientCommand.builder().id("2").recipeID("33").build();
 
         ingredientService.removeIngredientCommand(command);
 
