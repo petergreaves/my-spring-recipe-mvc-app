@@ -137,4 +137,42 @@ class IngredientServiceImplTest {
 
     }
 
+//    @Test
+//    public void testSaveNewIngredient(){
+//
+//
+//        Recipe recipe = Recipe.builder().id("33").build();
+//
+//        Ingredient i1 = new Ingredient();
+//        i1.setId("1");
+//
+//        Ingredient i2 = new Ingredient();
+//        i1.setId("1");
+//
+//        Ingredient i3 = new Ingredient();
+//        i1.setId("3");
+//        i3.setQuantity(3);
+//        Set<Ingredient> ingredientSet = new HashSet<>();
+//
+//        ingredientSet.add(i1);
+//        ingredientSet.add(i2);
+//        ingredientSet.add(i3);
+//
+//
+//        ingredientSet.forEach(i -> recipe.addIngredient(i));
+//
+//        IngredientCommand newIngredient = new IngredientCommand();
+//        newIngredient.setId("4");
+//        newIngredient.setRecipeID("33");
+//
+//        when(recipeReactiveRepository.findById(anyString())).thenReturn(Mono.just(recipe));
+//        when(recipeReactiveRepository.save(any())).thenReturn(Mono.just(recipe));
+//        Mono<IngredientCommand> monoCommand = ingredientService.saveIngredientCommand(newIngredient);
+//
+//        monoRecipe.subscribe(ingredients)
+//
+//
+//
+//    }
+
 }

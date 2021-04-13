@@ -62,5 +62,13 @@ public class Recipe {
         return this;
     }
 
+    public Recipe removeIngredient(Ingredient ingredient){
+
+        //   i.setRecipe(this);
+        this.ingredients.removeIf(ing -> ing.getId().equals(ingredient.getId()));
+        ingredient.setRecipe(null);
+        return this;
+    }
+
 
 }

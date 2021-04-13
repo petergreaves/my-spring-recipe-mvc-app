@@ -34,7 +34,7 @@ public class IngredientController {
     public String getIngredientsForRecipeID(Model model, @PathVariable String recipeID) {
         log.debug("Getting ingredients for recipe : " + recipeID);
 
-        RecipeCommand recipe = recipeService.findRecipeCommandByID(recipeID).block();
+        Mono<RecipeCommand> recipe = recipeService.findRecipeCommandByID(recipeID);
         model.addAttribute("recipe", recipe);
 
         return "recipe/ingredient/list";
@@ -52,8 +52,8 @@ public class IngredientController {
         final String ingredID = pathVarsMap.get("ingredientID");
 
         log.debug("Getting ingredient for recipe id : " + recipeID + ", ingredient id : " + ingredID + " for show");
-        IngredientCommand ingredientCommand =
-                ingredientService.findByRecipeIdAndIngredientId(recipeID, ingredID).block();
+        Mono<IngredientCommand> ingredientCommand =
+                ingredientService.findByRecipeIdAndIngredientId(recipeID, ingredID);
         model.addAttribute("ingredient", ingredientCommand);
 
         return view;
@@ -71,13 +71,15 @@ public class IngredientController {
         final String ingredID = pathVarsMap.get("ingredientID");
 
         log.debug("Getting ingredient for recipe id : " + recipeID + ", ingredient id : " + ingredID + " for update");
-        IngredientCommand ingredientCommand =
-                ingredientService.findByRecipeIdAndIngredientId(recipeID, ingredID).block();
-  //      ingredientCommand.setRecipeID(recipeID);
+        Mono<IngredientCommand> ingredientCommand =
+                ingredientService.findByRecipeIdAndIngredientId(recipeID, ingredID);
+        //      ingredientCommand.setRecipeID(recipeID);
         model.addAttribute("ingredient", ingredientCommand);
 
-        List<UnitOfMeasureCommand> uoms=unitOfMeasureService.listUnitOfMeasures().collectList().block();
-        model.addAttribute("uoms", uoms);
+        //    List<UnitOfMeasureCommand> uoms=unitOfMeasureService.listUnitOfMeasures().collectList().block();
+        //    model.addAttribute("uoms", uoms);
+
+        model.addAttribute("uoms", unitOfMeasureService.listUnitOfMeasures());
 
         return view;
 
@@ -88,8 +90,9 @@ public class IngredientController {
     public String doSaveOrUpdateIngredient(@ModelAttribute IngredientCommand ingredientCommand, @PathVariable String recipeID) {
 
         log.debug("Got an update to ingredients for recipe id : " + recipeID);
-        IngredientCommand saved = ingredientService.saveIngredientCommand(ingredientCommand).block();
-        log.debug("Returning ingred command : " + saved);
+        ingredientService.saveIngredientCommand(ingredientCommand).subscribe(savedIngr -> {
+            log.debug("Returning ingred command : " + savedIngr);
+        });
         return "redirect:/recipe/" + recipeID + "/ingredients";
     }
 
@@ -104,12 +107,12 @@ public class IngredientController {
 
         // get an ingredientcommand
 
-        IngredientCommand commandToRemove = ingredientService.findByRecipeIdAndIngredientId(recipeID, ingredientID).block();
+        Mono<IngredientCommand> commandToRemove = ingredientService.findByRecipeIdAndIngredientId(recipeID, ingredientID);
         // TODO 404 if we can't find either
 
-        ingredientService.removeIngredientCommand(commandToRemove);
+        commandToRemove.subscribe(ic -> ingredientService.removeIngredientCommand(ic).subscribe());
 
-        RecipeCommand recipe = recipeService.findRecipeCommandByID(recipeID).block();
+        Mono<RecipeCommand> recipe = recipeService.findRecipeCommandByID(recipeID);
         model.addAttribute("recipe", recipe);
 
 
@@ -117,22 +120,21 @@ public class IngredientController {
     }
 
 
-
     @GetMapping("/recipe/{recipeID}/ingredient/new")
     public String newRecipeIngredient(Model model, @PathVariable String recipeID) {
 
-        RecipeCommand recipeCommand = recipeService.findRecipeCommandByID(recipeID).block();
+        Mono<RecipeCommand> recipeCommand = recipeService.findRecipeCommandByID(recipeID);
         // assume for now we have a recipe, but we should execptn if null
 
         IngredientCommand ingredientCommand = IngredientCommand.builder().build();
         ingredientCommand.setUom(new UnitOfMeasureCommand());
 
-        ingredientCommand.setRecipeID(recipeCommand.getId());
+        ingredientCommand.setRecipeID(recipeID);
 
         model.addAttribute("ingredient", ingredientCommand);
 
         // need to add the list for the form to display
-        model.addAttribute("uoms", unitOfMeasureService.listUnitOfMeasures().collectList().block());
+        model.addAttribute("uoms", unitOfMeasureService.listUnitOfMeasures());
 
         return "recipe/ingredient/ingredientform";
     }

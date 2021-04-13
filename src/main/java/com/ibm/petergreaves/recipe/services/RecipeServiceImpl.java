@@ -64,6 +64,7 @@ public class RecipeServiceImpl implements RecipeService{
     @Override
     public Mono<RecipeCommand> saveRecipeCommand(RecipeCommand command) {
 
+        log.info("Saving recipe command with id : "+command.getId());
         Recipe detachedRecipe = new RecipeCommandToRecipe().convert(command);
         return recipeRepository.save(detachedRecipe).map(recipeToRecipeCommand::convert);
 

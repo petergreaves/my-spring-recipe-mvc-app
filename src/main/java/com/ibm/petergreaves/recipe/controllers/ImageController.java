@@ -7,7 +7,6 @@ import com.ibm.petergreaves.recipe.exceptions.NotFoundException;
 import com.ibm.petergreaves.recipe.services.ImageService;
 import com.ibm.petergreaves.recipe.services.RecipeService;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -18,7 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
-import javax.servlet.http.HttpServletResponse;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -54,6 +53,7 @@ public class ImageController {
 
     }
 
+    /*
     @GetMapping("/recipe/{recipeID}/recipeimage")
     public void getImageStream(@PathVariable String recipeID, HttpServletResponse response) throws IOException {
 
@@ -79,7 +79,7 @@ public class ImageController {
             IOUtils.copy(is, response.getOutputStream());
         }
     }
-
+*/
     @PostMapping("recipe/{id}/image")
     public String handleImagePost(@PathVariable String id, @RequestParam("imagefile") MultipartFile file) {
 

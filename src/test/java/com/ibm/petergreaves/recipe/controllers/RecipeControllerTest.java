@@ -97,7 +97,7 @@ class RecipeControllerTest {
         ArgumentCaptor<RecipeCommand> argumentCaptor = ArgumentCaptor.forClass(RecipeCommand.class);
         when(recipeService.saveRecipeCommand(any(RecipeCommand.class))).thenReturn(Mono.just(command));
 
-        controller.doSaveOrUpdate(command, bindingResult, model);
+        controller.doSaveOrUpdate(command);
 
         verify(recipeService, times(1)).saveRecipeCommand(any(RecipeCommand.class));
 

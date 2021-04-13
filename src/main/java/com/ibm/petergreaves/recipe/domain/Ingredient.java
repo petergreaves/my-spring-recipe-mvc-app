@@ -13,7 +13,6 @@ import java.util.UUID;
 public class Ingredient {
 
 
-    @Builder.Default
     private String id = UUID.randomUUID().toString();
 
     private Recipe recipe;

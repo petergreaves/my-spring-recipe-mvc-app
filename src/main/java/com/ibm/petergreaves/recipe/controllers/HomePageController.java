@@ -26,7 +26,7 @@ public class HomePageController {
        // System.out.println("Cat id : " + categoryOptional.get().getId());
        // System.out.println("UOM id : " + uomOptional.get().getId());
         log.debug("Got request for home page");
-        model.addAttribute("recipes", recipeService.getRecipes().collectList().block());
+        model.addAttribute("recipes", recipeService.getRecipes());
 
         return "index";
     }

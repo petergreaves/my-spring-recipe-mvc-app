@@ -2,17 +2,17 @@ package com.ibm.petergreaves.recipe.controllers;
 
 import com.ibm.petergreaves.recipe.commands.RecipeCommand;
 import com.ibm.petergreaves.recipe.domain.Recipe;
-import com.ibm.petergreaves.recipe.exceptions.NotFoundException;
 import com.ibm.petergreaves.recipe.services.RecipeService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
-import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
+import reactor.core.publisher.Mono;
+
+import java.util.UUID;
 
 @Slf4j
 @Controller
@@ -21,25 +21,35 @@ public class RecipeController {
     private final RecipeService recipeService;
     private static final String RECIPE_FORM_VIEWNAME = "recipe/recipeform";
 
+    private String savedRecipeID = null;
+
+    private WebDataBinder webDataBinder;
+
     public RecipeController(RecipeService recipeService) {
 
-        this.recipeService=recipeService;
+        this.recipeService = recipeService;
+    }
+
+    @InitBinder
+    public void initBinder(WebDataBinder webDataBinder) {
+
+        this.webDataBinder = webDataBinder;
     }
 
 
-    @GetMapping(value={"/recipe/{id}/show"})
-    public String getRecipeByID(Model model, @PathVariable String id){
+    @GetMapping(value = {"/recipe/{id}/show"})
+    public String getRecipeByID(Model model, @PathVariable String id) {
 
-       log.debug("Got request for recipe " + id);
-       Recipe recipe=recipeService.getRecipeByID(id).block();
-       model.addAttribute("recipe", recipe);
+        log.debug("Got request for recipe " + id);
+        Mono<Recipe> recipe = recipeService.getRecipeByID(id);
+        model.addAttribute("recipe", recipe);
 
         return "recipe/show";
     }
 
 
-    @GetMapping(value={"/recipe/{id}/delete"})
-    public String deleteRecipeByID(@PathVariable String id){
+    @GetMapping(value = {"/recipe/{id}/delete"})
+    public String deleteRecipeByID(@PathVariable String id) {
 
 
         log.debug("Got request to delete recipe " + id);
@@ -50,12 +60,11 @@ public class RecipeController {
     }
 
 
-
-    @GetMapping(value={"/recipe/{id}/update"})
-    public String getUpdateViewForRecipe(Model model, @PathVariable String id){
+    @GetMapping(value = {"/recipe/{id}/update"})
+    public String getUpdateViewForRecipe(Model model, @PathVariable String id) {
 
         log.debug("Got request for recipe for update with id : " + id);
-        RecipeCommand recipeCommand=recipeService.findRecipeCommandByID(id).block();
+        Mono<RecipeCommand> recipeCommand = recipeService.findRecipeCommandByID(id);
         model.addAttribute("recipe", recipeCommand);
 
         return RECIPE_FORM_VIEWNAME;
@@ -63,7 +72,7 @@ public class RecipeController {
 
 
     @GetMapping("/recipe/new")
-    public String newRecipe(Model model){
+    public String newRecipe(Model model) {
 
         model.addAttribute("recipe", new RecipeCommand());
 
@@ -73,21 +82,37 @@ public class RecipeController {
 
 
     @PostMapping("/recipe")
-    public String doSaveOrUpdate(@Validated @ModelAttribute("recipe") RecipeCommand recipe, BindingResult bindingResult, Model model){
+    public String doSaveOrUpdate(@ModelAttribute("recipe") RecipeCommand recipe) {
 
-        if (bindingResult.hasErrors()){
+        webDataBinder.validate();
+        BindingResult bindingResult = webDataBinder.getBindingResult();
+
+        if (bindingResult.hasErrors()) {
 
             for (ObjectError allError : bindingResult.getAllErrors()) {
-                    log.error("Recipe error validating : " +allError.getDefaultMessage());
+                log.error("Recipe error validating : " + allError.getDefaultMessage());
             }
             return RECIPE_FORM_VIEWNAME;
 
         }
 
-        RecipeCommand saved=recipeService.saveRecipeCommand(recipe).block();
-        return "redirect:/recipe/"+saved.getId()+"/show";
-    }
 
+        // save a new or existing recipe
+
+        String newRecipeID = UUID.randomUUID().toString();
+        if (recipe.getId() == null) {
+            recipe.setId(newRecipeID);
+        }
+        recipeService.saveRecipeCommand(recipe).subscribe();
+    //    recipeService.saveRecipeCommand(recipe).subscribe(savedRecipe ->{
+
+    //        log.info("saved " + savedRecipe.getDescription());
+    //    });
+        return "redirect:/recipe/" + recipe.getId() + "/show";
+    }
+}
+
+    /*
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler(NotFoundException.class)
     public ModelAndView handleNoSuchRecipe(Exception  exception ){
@@ -113,5 +138,5 @@ public class RecipeController {
 
         return modelAndView;
     }
+*/
 
-}
