@@ -10,7 +10,11 @@ import com.ibm.petergreaves.recipe.services.UnitOfMeasureService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.ObjectError;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
@@ -20,14 +24,27 @@ import java.util.Map;
 @Slf4j
 public class IngredientController {
 
+
+    private static final String VIEW_INGREDIENT_FORM = "recipe/ingredient/ingredientform";
+    private static final String VIEW_INGREDIENT_LIST = "recipe/ingredient/list";
+
+
     private IngredientService ingredientService;
     private RecipeService recipeService;
     private UnitOfMeasureService unitOfMeasureService;
+
+    private WebDataBinder webDataBinder;
 
     public IngredientController(IngredientService ingredientService, RecipeService recipeService, UnitOfMeasureService unitOfMeasureService) {
         this.ingredientService = ingredientService;
         this.recipeService = recipeService;
         this.unitOfMeasureService = unitOfMeasureService;
+    }
+
+    @InitBinder("ingredient")
+    public void initBinder(WebDataBinder binder){
+
+        this.webDataBinder = binder;
     }
 
     @GetMapping("/recipe/{recipeID}/ingredients")
@@ -37,16 +54,13 @@ public class IngredientController {
         Mono<RecipeCommand> recipe = recipeService.findRecipeCommandByID(recipeID);
         model.addAttribute("recipe", recipe);
 
-        return "recipe/ingredient/list";
+        return VIEW_INGREDIENT_LIST;
 
     }
 
 
     @GetMapping("/recipe/{recipeID}/ingredients/{ingredientID}/show")
     public String getIngredientForRecipeAndIngredientIDShow(Model model, @PathVariable Map<String, String> pathVarsMap) {
-
-
-        final String view = "recipe/ingredient/show";
 
         final String recipeID = pathVarsMap.get("recipeID");
         final String ingredID = pathVarsMap.get("ingredientID");
@@ -56,38 +70,41 @@ public class IngredientController {
                 ingredientService.findByRecipeIdAndIngredientId(recipeID, ingredID);
         model.addAttribute("ingredient", ingredientCommand);
 
-        return view;
+        return "/recipe/ingredient/show";
 
     }
-
 
     @GetMapping("/recipe/{recipeID}/ingredients/{ingredientID}/update")
     public String getIngredientForRecipeAndIngredientIDUpdate(Model model, @PathVariable Map<String, String> pathVarsMap) {
 
 
-        final String view = "recipe/ingredient/ingredientform";
-
         final String recipeID = pathVarsMap.get("recipeID");
         final String ingredID = pathVarsMap.get("ingredientID");
 
         log.debug("Getting ingredient for recipe id : " + recipeID + ", ingredient id : " + ingredID + " for update");
-        Mono<IngredientCommand> ingredientCommand =
+        Mono<IngredientCommand> ingredientCommandMono =
                 ingredientService.findByRecipeIdAndIngredientId(recipeID, ingredID);
-        //      ingredientCommand.setRecipeID(recipeID);
-        model.addAttribute("ingredient", ingredientCommand);
 
-        //    List<UnitOfMeasureCommand> uoms=unitOfMeasureService.listUnitOfMeasures().collectList().block();
-        //    model.addAttribute("uoms", uoms);
+        model.addAttribute("ingredient", ingredientCommandMono);
 
-        model.addAttribute("uoms", unitOfMeasureService.listUnitOfMeasures());
-
-        return view;
+        return VIEW_INGREDIENT_FORM;
 
     }
 
 
     @PostMapping("/recipe/{recipeID}/ingredient")
-    public String doSaveOrUpdateIngredient(@ModelAttribute IngredientCommand ingredientCommand, @PathVariable String recipeID) {
+    public String doSaveOrUpdateIngredient(@ModelAttribute("ingredient") IngredientCommand ingredientCommand, @PathVariable String recipeID, Model model) {
+
+        webDataBinder.validate();
+        BindingResult bindingResult = webDataBinder.getBindingResult();
+
+            if (bindingResult.hasErrors()) {
+                for (ObjectError allError : bindingResult.getAllErrors()) {
+                    log.error("Ingredient error validating : " + allError.getDefaultMessage());
+                }
+                return VIEW_INGREDIENT_FORM;
+
+            }
 
         log.debug("Got an update to ingredients for recipe id : " + recipeID);
         ingredientService.saveIngredientCommand(ingredientCommand).subscribe(savedIngr -> {
@@ -133,11 +150,13 @@ public class IngredientController {
 
         model.addAttribute("ingredient", ingredientCommand);
 
-        // need to add the list for the form to display
-        model.addAttribute("uoms", unitOfMeasureService.listUnitOfMeasures());
-
-        return "recipe/ingredient/ingredientform";
+        return VIEW_INGREDIENT_FORM;
     }
 
+    @ModelAttribute("uoms")
+    public Flux<UnitOfMeasureCommand> populateUOMs(){
+        return unitOfMeasureService.listUnitOfMeasures();
+
+    }
 
 }

@@ -2,14 +2,17 @@ package com.ibm.petergreaves.recipe.controllers;
 
 import com.ibm.petergreaves.recipe.commands.RecipeCommand;
 import com.ibm.petergreaves.recipe.domain.Recipe;
+import com.ibm.petergreaves.recipe.exceptions.NotFoundException;
 import com.ibm.petergreaves.recipe.services.RecipeService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
+import org.thymeleaf.exceptions.TemplateInputException;
 import reactor.core.publisher.Mono;
 
 import java.util.UUID;
@@ -104,39 +107,22 @@ public class RecipeController {
             recipe.setId(newRecipeID);
         }
         recipeService.saveRecipeCommand(recipe).subscribe();
-    //    recipeService.saveRecipeCommand(recipe).subscribe(savedRecipe ->{
+        //    recipeService.saveRecipeCommand(recipe).subscribe(savedRecipe ->{
 
-    //        log.info("saved " + savedRecipe.getDescription());
-    //    });
+        //        log.info("saved " + savedRecipe.getDescription());
+        //    });
         return "redirect:/recipe/" + recipe.getId() + "/show";
     }
-}
 
-    /*
+
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    @ExceptionHandler(NotFoundException.class)
-    public ModelAndView handleNoSuchRecipe(Exception  exception ){
+    @ExceptionHandler({NotFoundException.class, TemplateInputException.class})
+    public String handleNoSuchRecipe(Exception exception, Model model) {
 
         log.error("Got a 404 error");
         log.error(exception.getMessage());
-        ModelAndView modelAndView = new ModelAndView();
-        modelAndView.addObject("ex", exception);
-        modelAndView.setViewName("404error");
+        model.addAttribute("ex", exception);
+        return "404error";
 
-        return modelAndView;
     }
-
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler(NumberFormatException.class)
-    public ModelAndView handleParamFormatEx(Exception  exception ){
-
-        log.error("Got a 400 error");
-        log.error(exception.getMessage());
-        ModelAndView modelAndView = new ModelAndView();
-        modelAndView.addObject("ex", exception);
-        modelAndView.setViewName("400error");
-
-        return modelAndView;
-    }
-*/
-
+}

@@ -43,7 +43,7 @@ public class RecipeServiceImpl implements RecipeService{
 
                 RecipeCommand command = recipeToRecipeCommand.convert(recipe);
 
-                command.getIngredients().forEach(rc -> rc.setRecipeID(recipe.getId()));
+                command.getIngredients().forEach(ing ->ing.setRecipeID(recipe.getId()));
                 return command;
          }
 

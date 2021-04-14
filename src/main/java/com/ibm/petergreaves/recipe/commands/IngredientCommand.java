@@ -1,9 +1,12 @@
 package com.ibm.petergreaves.recipe.commands;
 
-import com.ibm.petergreaves.recipe.domain.Recipe;
-import com.ibm.petergreaves.recipe.domain.UnitOfMeasure;
+
 import lombok.*;
 
+
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 
 @Getter
@@ -15,7 +18,14 @@ public class IngredientCommand {
 
     private String id;
     private String recipeID;
+
+    @NotBlank
     private String description;
+
+    @Min(1)
+    @NotNull
     private BigDecimal quantity;
+
+    @NotNull
     private UnitOfMeasureCommand uom;
 }
